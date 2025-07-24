@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Grafika (https://www.grafika.cc/) -->
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1400" height="1400" viewBox="0 0 14 14" preserveAspectRatio="xMidYMid meet">
+	<defs>
+		<mask id="mask_2" mask-type="alpha">
+			<ellipse transform="matrix(0.05220780521631241, 0, 0, 0.05220780521631241, 0.0000002384185791015625, 0)" cx="0" cy="0" rx="100" ry="100" style="fill:none;stroke:white;stroke-linecap:butt;stroke-linejoin:round;stroke-width:19.15;" />
+		</mask>
+	</defs>
+	<g transform="matrix(1, 0, 0, 1, 7, 7)">
+		<g mask="url(#mask_2)">
+			<ellipse transform="matrix(0.06769680231809616, 0, 0, 0.06769680231809616, 0, 0)" cx="0" cy="0" rx="100" ry="100" style="fill:#ffffff;" />
+			<path d="M-1,-7 L-1,-2.41 L-4.24,-5.66 L-5.66,-4.24 L-2.41,-1 L-7,-1 L-7,1 L-2.41,1 L-5.66,4.24 L-4.24,5.66 L-1,2.41 L-1,7 L1,7 L1,2.41 L4.24,5.66 L5.66,4.24 L2.41,1 L7,1 L7,-1 L2.41,-1 L5.66,-4.24 L4.24,-5.66 L1,-2.41 L1,-7 L-1,-7 Z" fill-rule="evenodd" style="fill:#ff0000" />
+		</g>
+	</g>
+</svg>

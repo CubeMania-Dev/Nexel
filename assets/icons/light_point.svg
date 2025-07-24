@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Grafika (https://www.grafika.cc/) -->
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1024" height="1024" viewBox="0 0 1024 1024" preserveAspectRatio="xMidYMid meet">
+	<g transform="matrix(1, 0, 0, 1, 512, 412.2735595703125)">
+		<g transform="matrix(1, 0, 0, 1, 0, 99.7264404296875)">
+			<g transform="matrix(93.09091186523438, 0, 0, 93.09091186523438, 0.00006103515625, 0.0001220703125)">
+				<path transform="matrix(-1.000000238418579, 0.00000000627209084669289, -0.00000000627209084669289, -1.000000238418579, 0, 0)" d="M0,-1.71 L0,-4.3" style="fill:none;stroke:#FFFFFF;stroke-linecap:round;stroke-linejoin:round;stroke-width:1;" />
+				<path transform="matrix(0.04441864416003227, 0, 0, 0.04441864416003227, -0.0000006556510925292969, -1.0712814331054688)" d="M-41.9,62.6 C-46.02,59.84 -49.85,56.68 -53.34,53.18 C-66.92,39.56 -75.32,20.76 -75.32,-0 C-75.32,-41.6 -41.6,-75.32 0,-75.32 C41.6,-75.32 75.32,-41.6 75.32,-0 L75.32,-0 C75.32,20.84 66.86,39.7 53.18,53.34 C49.69,56.82 45.87,59.95 41.76,62.69" style="fill:none;stroke:#FFFFFF;stroke-linecap:round;stroke-linejoin:round;stroke-width:22.52;" />
+				<path transform="matrix(0.014206637628376484, 0, 0, 0.014206637628376484, -0.0000006556510925292969, -1.0712814331054688)" d="M75.32,-0 C75.32,41.6 41.6,75.32 0,75.32 C-41.6,75.32 -75.32,41.6 -75.32,-0 C-75.32,-41.6 -41.6,-75.32 0,-75.32 C41.6,-75.32 75.32,-41.6 75.32,-0 L75.32,-0 Z" style="fill:none;stroke:#FFFFFF;stroke-linecap:round;stroke-linejoin:round;stroke-width:61.05;" />
+			</g>
+		</g>
+	</g>
+</svg>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Grafika (https://www.grafika.cc/) -->
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1024" height="1024" viewBox="0 0 11 11" preserveAspectRatio="xMidYMid meet">
+	<g transform="matrix(1, 0, 0, 1, 5.500000476837158, 5.500001430511475)">
+		<path transform="matrix(0.0000000034756193478813202, -1.0000001192092896, 1.0000001192092896, 0.0000000034756193478813202, 0, 0)" d="M0,5 L0,3.68M0,-3.68 L0,-5" style="fill:none;stroke:#FFFFFF;stroke-linecap:round;stroke-linejoin:round;stroke-width:1;" />
+		<path transform="matrix(-1.000000238418579, 0.00000000627209084669289, -0.00000000627209084669289, -1.000000238418579, 0, 0)" d="M0,5 L0,3.68M0,-3.68 L0,-5" style="fill:none;stroke:#FFFFFF;stroke-linecap:round;stroke-linejoin:round;stroke-width:1;" />
+		<path transform="matrix(0.7071069478988647, 0.7071069478988647, -0.7071069478988647, 0.7071069478988647, 0, 0)" d="M0,5 L0,3.68M0,-3.68 L0,-5" style="fill:none;stroke:#FFFFFF;stroke-linecap:round;stroke-linejoin:round;stroke-width:1;" />
+		<path transform="matrix(-0.7071070075035095, 0.7071070075035095, -0.7071070075035095, -0.7071070075035095, 0, 0)" d="M0,5 L0,3.68M0,-3.68 L0,-5" style="fill:none;stroke:#FFFFFF;stroke-linecap:round;stroke-linejoin:round;stroke-width:1;" />
+		<path transform="matrix(0.029624000191688538, 0, 0, 0.029624000191688538, 0, 0)" d="M75.32,-0 C75.32,41.6 41.6,75.32 0,75.32 C-41.6,75.32 -75.32,41.6 -75.32,-0 C-75.32,-41.6 -41.6,-75.32 0,-75.32 C41.6,-75.32 75.32,-41.6 75.32,-0 Z" style="fill:none;stroke:#FFFFFF;stroke-linecap:round;stroke-linejoin:round;stroke-width:33.76;" />
+	</g>
+</svg>
