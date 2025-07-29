@@ -367,8 +367,7 @@ class HelperManager {
         color: '#666',
         linewidth: 2,
         depthTest: false,
-        depthWrite: false,
-        
+        transparent: true
       });
       this.connections = new THREE.LineSegments(this.geometry, this.material);
       this.connections.name = '__connections';

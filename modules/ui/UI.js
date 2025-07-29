@@ -1586,6 +1586,7 @@ ui.build({
       type: 'btn',
       icon: 'brush',
       minText: 'Weights',
+      hidden: true,
       onclick: () => {
         verifyWeights(selected)
       }
