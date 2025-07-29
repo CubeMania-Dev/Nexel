@@ -5,6 +5,8 @@ class Outliner {
     this.selectionEl = null
     this.collapsed = new WeakSet()
     
+    this.onUpdate = () => {}
+    
     this.containerEl.addEventListener('dragover', e => {
       e.preventDefault()
       this.containerEl.classList.add('drag-hover')
@@ -35,11 +37,13 @@ class Outliner {
       if (!this.collapsed.has(obj)) obj.children.forEach(c => walk(c, level + 1))
     }
     walk(scene, 0)
+    
+    this.onUpdate()
   }
   
   addItem(obj, level) {
   const hasChildren = obj.children.length > 0
-  const icon = obj.isCamera ? 'video' : obj.isMesh ? 'cube' : obj.isLight ? 'lightbulb' : obj.isGroup ? 'folder' : 'cube'
+  const icon = obj.isCamera ? 'video' : obj.isMesh ? 'cube' : obj.isLight ? 'lightbulb' : obj.isGroup ? 'folder' : obj.isBone? 'bone' : 'cube'
   
   const item = ui.build({
     type: 'div',
@@ -55,7 +59,7 @@ class Outliner {
   
   item._obj = obj
   
-  const iconEl = item.querySelector('i.fa-cube, i.fa-lightbulb, i.fa-layer-group, i.fa-video')
+  const iconEl = item.querySelector('i.fa-cube, i.fa-lightbulb, i.fa-layer-group, i.fa-video, i.fa-bone')
   
   const nonIgnoredChildren = obj.children.filter(child => !child.userData?.ignored)
   const showCollapse = nonIgnoredChildren.length > 0

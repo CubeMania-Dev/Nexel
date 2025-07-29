@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="20" height="20" viewBox="0 0 20 20" preserveAspectRatio="xMidYMid meet">
+	<g transform="matrix(1.471093773841858, 0, 0, 1.471093773841858, 10, 10)">
+		<g transform="matrix(0.014900987967848778, 0, 0, 0.014900987967848778, 0, 0)">
+			<path transform="matrix(5.545433521270752, 0, 0, 5.545433521270752, 0, 0)" d="M65.81,-24.68 L32.91,-41.13M-32.91,-41.13 L-65.81,-24.68 L0,8.23 L65.81,-24.68" fill-rule="evenodd" style="fill:none;stroke:var(--accent);stroke-linecap:round;stroke-linejoin:round;stroke-width:16.73;" />
+			<path transform="matrix(5.545433521270752, 0, 0, 5.545433521270752, 0, 0)" d="M0,-24.68 L0,-74.04 L-16.45,-60.43 L16.45,-60.43 L0,-74.04" fill-rule="evenodd" style="fill:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round;stroke-width:16.73;" />
+			<path d="M0,410.57 L364.95,228.09M364.95,228.09 L364.95,-0M-364.95,0 L-364.95,228.09 L0,410.57M0,182.48 L0,410.57 L0,410.57 L0,182.48 Z" style="fill:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round;stroke-width:91.24;" />
+		</g>
+	</g>
+</svg>

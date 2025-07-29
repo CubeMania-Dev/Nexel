@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Grafika (https://www.grafika.cc/) -->
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="20" height="20" viewBox="0 0 20 20" preserveAspectRatio="xMidYMid meet">
+	<g transform="matrix(1.471093773841858, 0, 0, 1.471093773841858, 10, 10)">
+		<g transform="matrix(0.014900987967848778, 0, 0, 0.014900987967848778, 0, 0)">
+			<path transform="matrix(-32.25740432739258, 32.25740432739258, -32.25740432739258, -32.25740432739258, 201.60877990722656, -56.45055389404297)" d="M1,0.5 Q0.47,-4.5 4,-4.5 Q7.53,-4.5 7,0.5M7,4 Q7.53,9 4,9 Q0.47,9 1,4M4,5 L4,-1" style="fill:none;stroke:var(--accent);stroke-linecap:round;stroke-linejoin:round;stroke-width:2;" />
+			<path d="M410.57,-410.57 L158.27,-242.37 L242.37,-158.27 L410.57,-410.57 ZM-322.49,78.14 L-410.57,136.86 L-410.57,410.57 L-136.86,410.57 L-78.14,322.49 L-322.49,78.14 Z" fill-rule="evenodd" style="fill:currentColor;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round;stroke-width:95.84;" />
+		</g>
+	</g>
+</svg>

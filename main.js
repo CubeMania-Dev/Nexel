@@ -6,7 +6,7 @@ if (configs.viewport.splashScreen) {
 
 
 // --- PROJECTS ---
-let projects = new Projects(scene, '#project-container')
+projects = new Projects(scene, '#project-container')
 
 let saved = false
 let projectName = null
@@ -25,6 +25,10 @@ projects.onLoad = () => {
 
 // --- OUTLINER ---
 outliner = new Outliner('#outliner')
+
+outliner.onUpdate = () => {
+  helpers.boneConnections()
+}
 
 
 // --- VIEWCUBE ---
@@ -89,7 +93,12 @@ initTransform = function() {
     renderPreview = true
     updateRenderState()
     
-    actions.saveState('transform', selection.selected[0])
+    if (selection.type === 'object') {
+      actions.saveState('transform', selected)
+    }
+    else if (selection.type !== 'object') {
+      actions.saveState('geometry', selected)
+    }
   })
   
   transform.addEventListener('mouseUp', () => {
@@ -97,11 +106,22 @@ initTransform = function() {
     renderPreview = false
     updateRenderState()
     updateProperties()
+    
+    if (selection.type !== 'object') {
+      helpers.wireframe(selected)
+    }
   })
   
   transform.addEventListener('objectChange', () => {
-    helpers.outline(selection.selected)
-    if (selection.selected[0].isDirectionalLight) {
+    if (selected.isBone) {
+      helpers.boneConnections()
+    }
+    else {
+      helpers.outline(null)
+      selection.updateSelected()
+    }
+    
+    if (selected.isDirectionalLight) {
       helpers.lights()
     }
   })
@@ -130,11 +150,17 @@ initTransform()
 actions = new ActionManager(scene)
 
 actions.onAction = () => {
-  helpers.outline(selection.selected)
+  helpers.outline(selected)
   helpers.lights()
-  outliner.refresh()
+  helpers.boneConnections()
   mat.list()
   updateProperties()
+  outliner.refresh()
+  
+  if (selection.type !== 'object') {
+    helpers.wireframe(selected)
+    selection._deselect()
+  }
 }
 
 
@@ -153,10 +179,23 @@ selection.onSelect = (object) => {
   
   transform.attach(object)
   outliner._select(object)
-  helpers.outline(object)
+  
+  if (selection.type === 'object') {
+    helpers.outline(object)
+    helpers.wireframe(null)
+    
+    selected = selection.selected[0]
+  }
+  else {
+    helpers.outline(null)
+    helpers.wireframe(selection.selectedMesh, true)
+    
+    selected = selection.selectedMesh
+  }
+  
   animation.renderKeyframes(object)
   
-  ui.show('#action-bar', 'fade-out')
+  ui.show('[data-show="onSelect"]')
   
   updateMaterials()
   updateProperties()
@@ -165,18 +204,21 @@ selection.onDeselect = (object) => {
   transform.detach()
   outliner._deselect()
   helpers.outline(null)
+  helpers.wireframe(null)
   animation.renderKeyframes(null)
   
-  ui.hide('#action-bar')
+  selected = null
   
-  ui.hide('#material-editor, #material-list, #texture-list')
-  ui.hide('#object-property-panel', 'fade')
+  ui.hide(
+    '#material-editor, #material-list, #texture-list, #object-property-panel, #object-tool-panel'
+  )
+  
+  ui.hide('[data-show="onSelect"]')
 }
 
 
-
 // --- OBJECTS ---
-objects = new ObjectManager(scene)
+objects = new Objects(scene)
 objects.addLight('ambient', 0.2)
 
 cursor = objects.setCursor(0, 0, 0)
@@ -189,8 +231,12 @@ objects.onAdd = (object) => {
   if (configs.viewport.autoSelect) selection._select(object)
   helpers.lights()
   helpers.cameras()
+  
   outliner.refresh()
   mat.list()
+  
+  helpers.bones()
+  helpers.boneConnections()
   
   updateRenderState()
   
@@ -216,23 +262,30 @@ cameraLight = helpers.cameraLight(mainCamera, 0.5)
 
 
 // --- COLOR PICKER ---
-let picker = new Picker()
+picker = new Picker()
 
 picker.add('#mat-color')
 
 
 // --- ANIMATION SYSTEM ---
-let animation = new AnimationSystem({
+animation = new AnimationSystem({
   container: '#frames',
 })
 
 animation.onUpdate = () => {
-  if (selection.selected) helpers.outline(selection.selected)
+  helpers.boneConnections()
+  
+  if (animation._playing) {
+    helpers.outline(null)
+    transform.detach()
+  } else if (selected) {
+    helpers.outline(selected)
+    transform.attach(selected)
+  }
 }
 
-
 // --- MATERIALS ---
-let mat = new Materials('#material-list', scene)
+mat = new Materials('#material-list', scene)
 
 
 /* ANIMATE */
@@ -264,15 +317,15 @@ onResize()
 window.addEventListener('resize', onResize)
 
 
-let animationId = null
-
 function animate() {
   animationId = requestAnimationFrame(animate)
   
-  renderer.render(scene, camera)
-  
-  helpers.updateCameraLight(mainCamera)
-  helpers.update(mainCamera)
+  if (true) {
+    renderer.render(scene, camera)
+    
+    helpers.updateCameraLight(mainCamera)
+    helpers.update(mainCamera)
+  }
 }
 
 window.onload = () => {
@@ -280,8 +333,9 @@ window.onload = () => {
   
   helpers.lights()
   helpers.cameras()
-  outliner.refresh()
   mat.list()
   
-  updateRenderState(scene)
+  updateRenderState()
+  
+  outliner.refresh()
 }

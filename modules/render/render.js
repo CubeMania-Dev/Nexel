@@ -1,7 +1,8 @@
 let softShadows = new SoftShadow({
   enabled: configs.render.softShadows,
-  softness: 0.05,
-  samples: 8
+  softness: 0.01,
+  rings: 2,
+  samples: 20
 })
 
 function render() {
@@ -27,7 +28,14 @@ function updateRenderState() {
       child.castShadow = rendering
       
       if (child.shadow) {
+        child.shadow.camera.near = 0.01
         child.shadow.camera.far = 1000
+        
+        child.shadow.camera.left = -configs.render.cameraSize
+        child.shadow.camera.right = configs.render.cameraSize
+        child.shadow.camera.top = configs.render.cameraSize
+        child.shadow.camera.bottom = -configs.render.cameraSize
+        
         child.shadow.bias = configs.render.bias
         child.shadow.mapSize = new THREE.Vector2(
           configs.render.shadowSize,
@@ -54,4 +62,21 @@ function renderImage() {
     container.appendChild(img)
   }
   return img
+}
+function saveRender() {
+  const img = document.querySelector('#render-output img')
+  if (!img) return
+  
+  try {
+    const a = document.createElement('a')
+    a.href = img.src
+    a.download = 'render.png'
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+  } catch (e) {
+    try {
+      window.open(`googlechrome://navigate?url=${encodeURIComponent(img.src)}`, '_blank')
+    } catch (e2) {}
+  }
 }

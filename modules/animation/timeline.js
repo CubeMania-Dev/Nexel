@@ -11,6 +11,11 @@ class AnimationSystem {
     this._playing = false
     this._rafId = null
     this._fps = 30
+    
+    this.onPlay = () => { this.onUpdate() }
+    this.onPause = () => { this.onUpdate() }
+    this.onUpdate = () => {}
+    
     this.init()
   }
   
@@ -69,13 +74,12 @@ class AnimationSystem {
     if (!fe) return
     this.cursor.style.left = fe.offsetLeft + 'px'
     this.currentFrame = frame
-    scene.children.forEach(o => {
+    scene.traverse(o => {
       if (Array.isArray(o.userData?.keyframes)) this.interpolate(o, frame)
     })
-    this.onUpdate(frame)
+    
+    this.onUpdate()
   }
-  
-  onUpdate(frame) {}
   
   addKeyframe(object) {
     if (!object.userData.keyframes) object.userData.keyframes = []
@@ -192,11 +196,15 @@ class AnimationSystem {
       this._rafId = setTimeout(step,1000/this._fps)
     }
     step()
+    
+    this.onPlay()
   }
   pause() {
     if (!this._playing) return
     this._playing = false
     clearTimeout(this._rafId)
     this._rafId = null
+    
+    this.onPause()
   }
 }

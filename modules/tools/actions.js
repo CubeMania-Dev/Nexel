@@ -16,31 +16,31 @@ class ActionManager {
     
     const arr = Array.isArray(objects) ? objects : [objects]
     arr.forEach(obj => {
-      if (obj) this.scene.remove(obj)
+      if (obj && obj.parent) obj.parent.remove(obj)
     })
     this.onAction()
   }
-  
+    
   copy(objects) {
     if (!objects) return
     
     const arr = Array.isArray(objects) ? objects : [objects]
-    this.clipboard = arr.map(obj => obj.clone(true))
+    this.clipboard = arr.map(obj => ({
+      original: obj,
+      clone: obj.clone(true),
+      parent: obj.parent
+    }))
     return true
-    
-    this.onAction()
   }
-  
+
   paste() {
-    if (this.clipboard.length === 0) return false
-    const clones = this.clipboard.map(obj => {
-      const clone = obj.clone(true)
-      this.scene.add(clone)
-      return clone
+    if (!this.clipboard || this.clipboard.length === 0) return false
+    const clones = this.clipboard.map(entry => {
+      const newClone = entry.clone.clone(true)
+      if (entry.parent) entry.parent.add(newClone)
+      return newClone
     })
     return clones.length === 1 ? clones[0] : clones
-    
-    this.onAction()
   }
   
   duplicate(objects) {
@@ -66,14 +66,24 @@ class ActionManager {
   
   group(objects = []) {
     if (!Array.isArray(objects) || objects.length === 0) return null
+    
     const group = new THREE.Group()
+    group.name = 'Group'
+    
+    const parents = objects.map(obj => obj.parent).filter(p => p)
+    const commonParent = parents.every(p => p === parents[0]) ? parents[0] : null
+    
     objects.forEach(obj => {
       if (obj) group.add(obj)
     })
-    this.scene.add(group)
-    return group
     
-    this.onAction()
+    if (commonParent) {
+      commonParent.add(group)
+    } else {
+      this.scene.add(group)
+    }
+    
+    return group
   }
   
   jump(camera) {
@@ -166,7 +176,6 @@ class ActionManager {
   
     this.stack.undo.push(state)
     this.stack.redo.length = 0
-    this.onAction()
   }
   
   undo() {

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Grafika (https://www.grafika.cc/) -->
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="20" height="20" viewBox="0 0 20 20" preserveAspectRatio="xMidYMid meet">
+	<g transform="matrix(1, 0, 0, 1, 10, 10)">
+		<rect transform="matrix(0.186733216047287, 0, 0, 0.186733216047287, 0, 0)" x="-53.55" y="-53.55" width="107.1" height="107.1" style="fill:#21212188;" />
+		<g transform="matrix(1.471093773841858, 0, 0, 1.471093773841858, 0, 0)">
+			<g transform="matrix(0.014900987967848778, 0, 0, 0.014900987967848778, 0, 5.4381303787231445)">
+				<path transform="matrix(5.545433521270752, 0, 0, 5.545433521270752, 0, 0)" d="M57.58,-123.4 L-57.58,-8.23M-57.58,-123.4 L57.58,-8.23" fill-rule="evenodd" style="fill:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round;stroke-width:24.96;" />
+			</g>
+		</g>
+	</g>
+</svg>

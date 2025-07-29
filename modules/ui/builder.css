@@ -117,6 +117,30 @@ html, body {
     
     animation: tooltip 0.5s;
   }
+  
+  &[disabled] {
+    background: var(--bg-2);
+    color: var(--bg-5);
+  }
+  
+  &:has(.min) {
+    border: none;
+    padding: var(--spc-md);
+    
+    i, svg {
+      position: relative;
+      top: -5px;
+    }
+    
+    span {
+      font-size: 8px;
+      position: absolute;
+      bottom: 2px;
+      font-weight: bold;
+      width: 100%;
+      overflow: hidden;
+    }
+  }
 }
 
 .bar {
@@ -544,6 +568,14 @@ input[type="file"]::file-selector-button {
   height: 100%;
 }
 
+.z-0 { z-index: 0; }
+.z-1 { z-index: 10; }
+.z-2 { z-index: 20; }
+.z-3 { z-index: 30; }
+.z-4 { z-index: 40; }
+.z-5 { z-index: 50; }
+.z-6 { z-index: 60; }
+
 
 /* DECORATION */
 .decoration_dropdown {
@@ -578,6 +610,14 @@ input[type="file"]::file-selector-button {
     content: '\f521';
     font-weight: bold;
     font-size: 1em;
+  }
+}
+
+.decoration_title {
+  &:before {
+    content: attr(title);
+    font-weight: 900;
+    color: inherit;
   }
 }
 

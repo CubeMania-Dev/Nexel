@@ -1,7 +1,7 @@
 let configs = {
   nexel: {
     name: 'Nexel3D',
-    version: '2.0',
+    version: '2.0 Beta',
     updateName: 'Modeling Update',
     date: '24 / 7 / 2025',
     creator: 'CubeMania MC'
@@ -14,7 +14,7 @@ let configs = {
     background: '#303030',
     
     pxRatio: window.devicePixelRatio,
-    antialias: true,
+    antialias: false,
     alpha: false,
     
     sounds: true,
@@ -26,7 +26,7 @@ let configs = {
   camera: {
     fov: 70,
     near: 0.1,
-    far: 100,
+    far: 1000,
     
     rotateSpeed: 0.8,
     zoomSpeed: 0.6,
@@ -44,10 +44,10 @@ let configs = {
   render: {
     shadows: true,
     softShadows: false,
-    shadowType: THREE.PCFSoftShadowMap,
-    shadowSize: 1080,
+    shadowType: THREE.BasicShadowMap,
+    shadowSize: 4096,
+    cameraSize: 20,
     
-    physicallyCorrect: true,
     bias: -0.0001,
     near: 0.01,
     far: 1000
@@ -68,12 +68,18 @@ let
 let 
   objects,
   helpers,
+  projects,
   selection,
+  selected,
   outliner,
   transform,
   actions, 
   grid,
-  cursor;
+  cursor,
+  mat,
+  animation,
+  picker,
+  animationId
 
 // render / functions.js
 let 

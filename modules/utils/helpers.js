@@ -172,6 +172,7 @@ class HelperManager {
   light.userData.ignored = true
   light.userData.preserve = true
   light.userData.render = false
+  light.raycast = () => {};
 
   this.cameraLightHelper = light
   this.cameraLightTarget = target
@@ -184,7 +185,7 @@ class HelperManager {
   outline(object) {
   if (this.currentOutline) {
     this.currentOutline.forEach(h => {
-      this.scene.remove(h)
+      h.parent.remove(h)
       h.geometry.dispose()
       h.material.dispose()
     })
@@ -197,12 +198,34 @@ class HelperManager {
   const outlines = []
   
   for (const obj of targets) {
-    if (!obj.isMesh) continue
-    const helper = new THREE.BoxHelper(obj, 0x0080ff)
-    helper.userData.ignored = true
-    helper.userData.render = false
-    this.scene.add(helper)
-    outlines.push(helper)
+    if (!obj.isMesh || !obj.geometry) continue
+    
+    const geometry = obj.geometry
+    const positionAttr = geometry.attributes.position
+    if (!positionAttr) continue
+    
+    let localBox = new THREE.Box3().setFromBufferAttribute(positionAttr)
+    let size = new THREE.Vector3()
+    localBox.getSize(size)
+    size.multiplyScalar(1.1)
+    
+    const boxGeo = new THREE.BoxGeometry(size.x, size.y, size.z)
+    const edges = new THREE.EdgesGeometry(boxGeo)
+    const material = new THREE.LineBasicMaterial({
+      color: 0x0080ff,
+      linewidth: 1,
+    })
+    
+    const outline = new THREE.LineSegments(edges, material)
+    const center = new THREE.Vector3()
+    localBox.getCenter(center)
+    outline.position.copy(center)
+    outline.raycast = () => {}
+    outline.userData.ignored = true
+    outline.userData.render = false
+    
+    obj.add(outline)
+    outlines.push(outline)
   }
   
   this.currentOutline = outlines
@@ -237,8 +260,8 @@ class HelperManager {
         })
         point = new THREE.Points(geo, mat)
         point.name = '_lightHelper'
+        point.raycast = () => {};
         point.userData.ignored = true
-        point.userData.isHelper = true
         point.userData.render = false
         light.add(point)
       }
@@ -269,14 +292,13 @@ class HelperManager {
       color: 0x000000,
       dashSize: 0.1,
       gapSize: 0.1,
-      linewidth: 0.5
+      
     })
     
     const line = new THREE.Line(geometry, material)
     line.computeLineDistances()
+    line.raycast = () => {};
     line.userData.ignored = true
-    line.userData.isHelper = true
-    line.userData.noSelectable = true
     line.userData.render = false
     
     return line
@@ -301,15 +323,79 @@ class HelperManager {
           
           child.hasHelper = true
           
-          helper.userData.ignored = true
-          helper.userData.noSelectable = true
+          helper.raycast = () => {};
           helper.userData.noShadow = true
+          helper.userData.ignored = true
           helper.userData.render = false
           
           return helper
         }, 50)
       }
     })
+  }
+  
+  bones() {
+    const helpers = [];
+    
+    scene.traverse(child => {
+      if (child.isBone) {
+        let helper = new THREE.Points(
+          new THREE.BufferGeometry().setAttribute('position', new THREE.Float32BufferAttribute([0, 0, 0], 3)),
+          new THREE.PointsMaterial({
+            size: 8,
+            sizeAttenuation: false,
+            map: textureLoader.load('./assets/images/bone.png'),
+            transparent: true,
+            depthTest: false
+          })
+        );
+        helper.userData.ignored = true;
+        helper.userData.render = false
+        helper.raycast = () => {};
+        child.add(helper);
+        helpers.push(helper);
+      }
+    });
+    
+    return helpers;
+  }
+  
+  boneConnections() {
+    if (!this.connections) {
+      this.geometry = new THREE.BufferGeometry();
+      this.material = new THREE.LineBasicMaterial({
+        color: '#666',
+        linewidth: 2,
+        depthTest: false,
+        depthWrite: false,
+        
+      });
+      this.connections = new THREE.LineSegments(this.geometry, this.material);
+      this.connections.name = '__connections';
+      this.connections.userData.ignored = true
+      this.connections.userData.render = false
+      this.scene.add(this.connections);
+    }
+    
+    const segments = [];
+    
+    this.scene.traverse(bone => {
+      if (bone.isBone && bone.children.length > 0) {
+        for (const child of bone.children) {
+          if (child.isBone) {
+            const start = new THREE.Vector3();
+            const end = new THREE.Vector3();
+            bone.getWorldPosition(start);
+            child.getWorldPosition(end);
+            segments.push(start.x, start.y, start.z, end.x, end.y, end.z);
+          }
+        }
+      }
+    });
+    
+    this.geometry.setAttribute('position', new THREE.Float32BufferAttribute(segments, 3));
+    this.geometry.computeBoundingSphere();
+    this.geometry.attributes.position.needsUpdate = true;
   }
   
   updateCameraLight(camera) {
@@ -339,5 +425,64 @@ class HelperManager {
     let xz = new THREE.Vector2(camera.position.x, camera.position.z)
     this.infiniteGridHelper.material.uniforms.center.value.copy(xz)
     this.infiniteGridHelper.material.uniforms.center.needsUpdate = true
+  }
+  
+  wireframe(obj, vertices = true) {
+    if (!this._wires) this._wires = new Set();
+    if (!this._wireMat) this._wireMat = new THREE.LineBasicMaterial({ color: 0x000000 });
+    if (!this._vertMat) this._vertMat = new THREE.PointsMaterial({ color: '#000', size: 5, sizeAttenuation: false });
+    
+    if (obj === null) {
+      for (const w of this._wires) {
+        if (w.parent) {
+          w.visible = false;
+          if (w.parent._verts) w.parent._verts.visible = false;
+        }
+      }
+      return;
+    }
+    
+    if (obj._wire) {
+      obj._wire.geometry.dispose();
+      obj._wire.geometry = new THREE.EdgesGeometry(obj.geometry);
+      obj._wire.visible = true;
+      
+      if (vertices) {
+        if (obj._verts) {
+          obj._verts.geometry.dispose();
+          obj._verts.geometry = obj.geometry;
+          obj._verts.visible = true;
+        } else {
+          const verts = new THREE.Points(obj.geometry, this._vertMat);
+          verts.userData.ignored = true;
+          verts.raycast = () => {};
+          obj.add(verts);
+          obj._verts = verts;
+        }
+      } else if (obj._verts) {
+        obj._verts.visible = false;
+      }
+      return obj._wire;
+    }
+    
+    const geo = new THREE.EdgesGeometry(obj.geometry);
+    const wire = new THREE.LineSegments(geo, this._wireMat);
+    wire.userData.ignored = true
+    
+    wire.raycast = () => {};
+    obj.add(wire);
+    obj._wire = wire;
+    this._wires.add(wire);
+    
+    if (vertices) {
+      const verts = new THREE.Points(obj.geometry, this._vertMat);
+      verts.userData.ignored = true;
+      
+      verts.raycast = () => {};
+      obj.add(verts);
+      obj._verts = verts;
+    }
+    
+    return wire;
   }
 }

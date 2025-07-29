@@ -1,4 +1,3 @@
-// BASIC SCENE
 // --- SCENE ---    
 scene = new THREE.Scene()
 
@@ -13,6 +12,7 @@ mainCamera = new THREE.PerspectiveCamera(
 mainCamera.position.set(4, 2, 4)
 mainCamera.name = 'mainCamera'
 mainCamera.userData.ignored = true
+mainCamera.userData.preserve = true
 mainCamera.lookAt(new THREE.Vector3(0, 0, 0))
 
 
@@ -26,10 +26,11 @@ function initRenderer() {
 	renderer = new THREE.WebGLRenderer({
 		canvas: canvas,
 		alpha: configs.viewport.alpha,
-		antialias: configs.viewport.antialias
+		antialias: configs.viewport.antialias,
+		powerPerformance: 'high-performance'
 	})
 	
-	renderer.physicallyCorrectLights = configs.render.physicallyCorrect
+	renderer.useLegacyLights = false
 	renderer.shadowMap.enabled = configs.render.shadows
 	renderer.shadowMap.type = configs.render.shadowType
 	renderer.setSize(configs.viewport.w, configs.viewport.h)

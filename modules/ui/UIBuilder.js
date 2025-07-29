@@ -729,6 +729,13 @@ build(config, parent) {
 			el.appendChild(span)
 		}
 		
+		if (conf.minText) {
+			const minText = document.createElement('span')
+			minText.className = 'min'
+			minText.textContent = conf.minText
+			el.appendChild(minText)
+		}
+		
 		if (conf.decoration !== false && (conf.decoration || conf.dropdown)) {
 			const deco = document.createElement('span')
 			deco.className = `decoration_${conf.decoration || 'dropdown'}`
@@ -755,6 +762,14 @@ build(config, parent) {
 					target.setAttribute(key, conf.attrs[key])
 				}
 			}
+		}
+		
+		if (conf.data) {  
+		  for (let key in conf.data) {  
+		    if (Object.prototype.hasOwnProperty.call(conf.data, key)) {  
+		      target.dataset[key] = conf.data[key]  
+		    }  
+		  }  
 		}
 		
 		if (conf.tooltip) target.title = conf.tooltip
