@@ -44,11 +44,11 @@ let configs = {
   render: {
     shadows: true,
     softShadows: false,
-    shadowType: THREE.BasicShadowMap,
+    shadowType: THREE.PCFShadowMap,
     shadowSize: 4096,
     cameraSize: 20,
     
-    bias: -0.0001,
+    bias: -0.00005,
     near: 0.01,
     far: 1000
   }

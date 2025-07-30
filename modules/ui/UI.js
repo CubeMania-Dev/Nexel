@@ -163,6 +163,11 @@ ui.build({
       icon: 'sliders',
       tooltip: 'Transform',
       hideElement: '#material-editor, #material-list',
+      onclick: () => {
+        if (selected) {
+          ui.toggle('#object-property-panel')
+        }
+      }
     }, // PROPERTY
     
     {

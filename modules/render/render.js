@@ -44,6 +44,10 @@ function updateRenderState() {
       }
     }
     
+    if (child.isPointLight) {
+      child.shadow.bias = -0.01
+    }
+    
     if (child.userData.render === false) {
       child.visible = !rendering
     }

@@ -21,7 +21,7 @@ class Objects {
       physical: new THREE.MeshPhysicalMaterial({
         roughness: 1,
         side: 2,
-        flatShading: true,
+        flatShading: true
       })
     }
     let object = {
@@ -64,7 +64,7 @@ class Objects {
     z = z ?? 0
     
     let mesh = new THREE.Mesh(
-      new THREE.OBJGeometry(path, true, false),
+      new THREE.OBJGeometry(path, true, true),
       new THREE.MeshPhysicalMaterial({
         roughness: 1,
         side: 2,

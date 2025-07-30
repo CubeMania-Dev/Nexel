@@ -113,10 +113,10 @@ initTransform = function() {
   })
   
   transform.addEventListener('objectChange', () => {
-    if (selected.isBone) {
-      helpers.boneConnections()
-    }
-    else {
+    
+    helpers.boneConnections()
+    
+    if (selection.type !== 'object') {
       helpers.outline(null)
       selection.updateSelected()
     }
