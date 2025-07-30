@@ -44,7 +44,7 @@ let configs = {
   render: {
     shadows: true,
     softShadows: false,
-    shadowType: THREE.PCFShadowMap,
+    shadowType: THREE.PCFSoftShadowMap,
     shadowSize: 4096,
     cameraSize: 20,
     
