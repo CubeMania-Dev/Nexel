@@ -21,27 +21,53 @@ class ActionManager {
     this.onAction()
   }
     
-  copy(objects) {
-    if (!objects) return
+copy(objects) {
+  if (!objects) return
+  
+  const arr = Array.isArray(objects) ? objects : [objects]
+  this.clipboard = arr.map(obj => {
+    let clone
+    if (obj.isMesh) {
+      const geometry = obj.geometry.clone()
+      const material = Array.isArray(obj.material) ?
+        obj.material.map(m => m.clone()) :
+        obj.material.clone()
+      clone = new obj.constructor(geometry, material)
+    } else {
+      clone = obj.clone(true)
+    }
     
-    const arr = Array.isArray(objects) ? objects : [objects]
-    this.clipboard = arr.map(obj => ({
+    return {
       original: obj,
-      clone: obj.clone(true),
+      clone,
       parent: obj.parent
-    }))
-    return true
-  }
+    }
+  })
+  
+  return true
+}
 
-  paste() {
-    if (!this.clipboard || this.clipboard.length === 0) return false
-    const clones = this.clipboard.map(entry => {
-      const newClone = entry.clone.clone(true)
-      if (entry.parent) entry.parent.add(newClone)
-      return newClone
-    })
-    return clones.length === 1 ? clones[0] : clones
-  }
+paste() {
+  if (!this.clipboard || this.clipboard.length === 0) return false
+  
+  const clones = this.clipboard.map(entry => {
+    let newClone
+    if (entry.clone.isMesh) {
+      const geometry = entry.clone.geometry.clone()
+      const material = Array.isArray(entry.clone.material) ?
+        entry.clone.material.map(m => m.clone()) :
+        entry.clone.material.clone()
+      newClone = new entry.clone.constructor(geometry, material)
+    } else {
+      newClone = entry.clone.clone(true)
+    }
+    
+    if (entry.parent) entry.parent.add(newClone)
+    return newClone
+  })
+  
+  return clones.length === 1 ? clones[0] : clones
+}
   
   duplicate(objects) {
     if (!objects) return

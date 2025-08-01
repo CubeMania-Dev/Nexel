@@ -125,20 +125,6 @@ ui.build({
   ]
 })
 
-
-// #project-container
-ui.build({
-  type: 'floating-grid',
-  id: 'project-container',
-  hidden: true,
-})
-ui.align(
-  '#project-container',
-  ['#top-bar', 'bottom'],
-  ['#open-project-btn', 'left', true]
-)
-
-
 // - - - #side-bar - - -
 ui.build({
   type: 'side-bar',
@@ -172,23 +158,6 @@ ui.build({
     
     {
       type: 'sep'
-    }, // ---
-    
-    {
-      type: 'btn',
-      icon: 'tools',
-      id: 'tools-btn',
-      hidden: true,
-      onclick: el => {
-        if (selected) {
-          ui.show('#object-tool-panel')
-        }
-      }
-    }, // EDIT
-    
-    {
-      type: 'sep',
-      hidden: true,
     }, // ---
     
     {
@@ -246,158 +215,79 @@ ui.build({
 })
 ui.align(
   '#side-bar',
-  ['#transform-bar', 'bottom']
+  ['#transform-bar', 'bottom'],
+  ['#animation-timeline', 'top']
 )
 
-// #object-property-panel
+// - - - #transform-bar - - -
 ui.build({
-  type: 'floating-container',
-  id: 'object-property-panel',
-  hidden: true,
+  type: 'bar',
+  id: 'transform-bar',
+  direction: 'row',
+  class: 'rad-br',
   content: [
-    { type: 'h5', text: 'Position' },
     {
-      label: 'X',
-      id: 'pos-x',
-      type: 'number',
-      attrs: { step: '0.01' },
-      oninput: el => {
-        let val = el.value
-        let o = selection.selected[0]
-        let n = parseFloat(val)
-        if (o && !isNaN(n)) o.position.x = n
-        
-        helpers.outline(selection.selected[0])
+      type: 'btn',
+      icon: 'arrows',
+      group: 'transform',
+      active: true,
+      tooltip: 'Transform: Position',
+      onclick: () => {
+        transform.setMode('translate')
       }
-    },
+    }, // Position
     {
-      label: 'Y',
-      id: 'pos-y',
-      type: 'number',
-      attrs: { step: '0.01' },
-      oninput: el => {
-        let val = el.value
-        let o = selection.selected[0]
-        let n = parseFloat(val)
-        if (o && !isNaN(n)) o.position.y = n
-        
-        helpers.outline(selection.selected[0])
+      type: 'btn',
+      icon: 'rotate',
+      group: 'transform',
+      tooltip: 'Transform: Rotation',
+      onclick: () => {
+        transform.setMode('rotate')
       }
-    },
+    }, // Rotation
     {
-      label: 'Z',
-      id: 'pos-z',
-      type: 'number',
-      attrs: { step: '0.01' },
-      oninput: el => {
-        let val = el.value
-        let o = selection.selected[0]
-        let n = parseFloat(val)
-        if (o && !isNaN(n)) o.position.z = n
-        
-        helpers.outline(selection.selected[0])
+      type: 'btn',
+      icon: 'expand',
+      group: 'transform',
+      tooltip: 'Transform: Scale',
+      onclick: () => {
+        transform.setMode('scale')
       }
-    },
-    { type: 'sep' },
-    { type: 'h5', text: 'Rotation' },
-    {
-      label: 'X',
-      id: 'rot-x',
-      type: 'number',
-      attrs: { step: '0.01' },
-      oninput: el => {
-        let val = el.value
-        let o = selection.selected[0]
-        let n = parseFloat(val)
-        if (o && !isNaN(n)) o.rotation.x = n * Math.PI / 180
-        
-        helpers.outline(selection.selected[0])
-      }
-    },
-    {
-      label: 'Y',
-      id: 'rot-y',
-      type: 'number',
-      attrs: { step: '0.01' },
-      oninput: el => {
-        let val = el.value
-        let o = selection.selected[0]
-        let n = parseFloat(val)
-        if (o && !isNaN(n)) o.rotation.y = n * Math.PI / 180
-        
-        helpers.outline(selection.selected[0])
-      }
-    },
-    {
-      label: 'Z',
-      id: 'rot-z',
-      type: 'number',
-      attrs: { step: '0.01' },
-      oninput: el => {
-        let val = el.value
-        let o = selection.selected[0]
-        let n = parseFloat(val)
-        if (o && !isNaN(n)) o.rotation.z = n * Math.PI / 180
-        
-        helpers.outline(selection.selected[0])
-      }
-    },
-    { type: 'sep' },
-    { type: 'h5', text: 'Scale' },
-    {
-      label: 'X',
-      id: 'scl-x',
-      type: 'number',
-      attrs: { step: '0.01' },
-      oninput: el => {
-        let val = el.value
-        let o = selection.selected[0]
-        let n = parseFloat(val)
-        if (o && !isNaN(n)) o.scale.x = n
-        
-        helpers.outline(selection.selected[0])
-      }
-    },
-    {
-      label: 'Y',
-      id: 'scl-y',
-      type: 'number',
-      attrs: { step: '0.01' },
-      oninput: el => {
-        let val = el.value
-        let o = selection.selected[0]
-        let n = parseFloat(val)
-        if (o && !isNaN(n)) o.scale.y = n
-        
-        helpers.outline(selection.selected[0])
-      }
-    },
-    {
-      label: 'Z',
-      id: 'scl-z',
-      type: 'number',
-      attrs: { step: '0.01' },
-      oninput: el => {
-        let val = el.value
-        let o = selection.selected[0]
-        let n = parseFloat(val)
-        if (o && !isNaN(n)) o.scale.z = n
-        
-        helpers.outline(selection.selected[0])
-      }
-    }
+    }, // Scale
   ]
 })
 ui.align(
-  '#object-property-panel',
-  ['#side-bar', 'right'],
-  ['#side-bar', 'top', true]
-)
-ui.borderResize(
-  '#object-property-panel'
+  '#transform-bar',
+  ['#top-bar', 'bottom'],
+  ['body', 'left', true],
 )
 
-// #material-editor
+// - - - #view-cube - - -
+ui.build({
+  type: 'div',
+  id: 'view-cube'
+})
+ui.align(
+  '#view-cube',
+  ['#outliner', 'left'],
+  ['#top-bar', 'bottom']
+)
+
+// - - - #outliner - - -
+ui.build({
+  type: 'floating-container',
+  id: 'outliner',
+})
+ui.align(
+  '#outliner',
+  ['#top-bar', 'bottom'],
+  ['body', 'right', true]
+)
+ui.borderResize(
+  '#outliner'
+)
+
+// - - - #material-editor - - -
 ui.build({
   type: 'floating-container',
   id: 'material-editor',
@@ -626,7 +516,7 @@ ui.align(
   ['#side-bar', 'top', true]
 )
 
-// #material-list + #texture-list
+// #material-list
 ui.build({
   type: 'floating-grid',
   autoAlign: true,
@@ -640,6 +530,7 @@ ui.align(
   ['#material-editor', 'top', true]
 )
 
+// #texture-list
 ui.build({
   type: 'floating-grid',
   hidden: true,
@@ -650,28 +541,6 @@ ui.align(
   '#texture-list',
   ['#material-editor', 'right'],
   ['#material-editor', 'top', true]
-)
-
-// #object-tool-panel
-ui.build({
-  type: 'floating-container',
-  id: 'object-tool-panel',
-  hidden: true,
-  style: {
-    padding: 'var(--spc-xs)'
-  },
-  class: 'rad-right',
-  content: [
-  {
-    type: 'btn',
-    icon: 'bone',
-    minText: 'Rigging',
-  }]
-})
-ui.align(
-  '#object-tool-panel',
-  ['#side-bar', 'right'],
-  ['#tools-btn', 'top', true]
 )
 
 function updateMaterials() {
@@ -696,6 +565,155 @@ function updateMaterials() {
   setBoolean('#mat-transparent', sel.material.transparent)
 }
 
+
+// - - - #object-property-panel - - -
+ui.build({
+  type: 'floating-container',
+  id: 'object-property-panel',
+  hidden: true,
+  content: [
+    { type: 'h5', text: 'Position' },
+    {
+      label: 'X',
+      id: 'pos-x',
+      type: 'number',
+      attrs: { step: '0.01' },
+      oninput: el => {
+        let val = el.value
+        let o = selection.selected[0]
+        let n = parseFloat(val)
+        if (o && !isNaN(n)) o.position.x = n
+        
+        helpers.outline(selection.selected[0])
+      }
+    },
+    {
+      label: 'Y',
+      id: 'pos-y',
+      type: 'number',
+      attrs: { step: '0.01' },
+      oninput: el => {
+        let val = el.value
+        let o = selection.selected[0]
+        let n = parseFloat(val)
+        if (o && !isNaN(n)) o.position.y = n
+        
+        helpers.outline(selection.selected[0])
+      }
+    },
+    {
+      label: 'Z',
+      id: 'pos-z',
+      type: 'number',
+      attrs: { step: '0.01' },
+      oninput: el => {
+        let val = el.value
+        let o = selection.selected[0]
+        let n = parseFloat(val)
+        if (o && !isNaN(n)) o.position.z = n
+        
+        helpers.outline(selection.selected[0])
+      }
+    },
+    { type: 'sep' },
+    { type: 'h5', text: 'Rotation' },
+    {
+      label: 'X',
+      id: 'rot-x',
+      type: 'number',
+      attrs: { step: '0.01' },
+      oninput: el => {
+        let val = el.value
+        let o = selection.selected[0]
+        let n = parseFloat(val)
+        if (o && !isNaN(n)) o.rotation.x = n * Math.PI / 180
+        
+        helpers.outline(selection.selected[0])
+      }
+    },
+    {
+      label: 'Y',
+      id: 'rot-y',
+      type: 'number',
+      attrs: { step: '0.01' },
+      oninput: el => {
+        let val = el.value
+        let o = selection.selected[0]
+        let n = parseFloat(val)
+        if (o && !isNaN(n)) o.rotation.y = n * Math.PI / 180
+        
+        helpers.outline(selection.selected[0])
+      }
+    },
+    {
+      label: 'Z',
+      id: 'rot-z',
+      type: 'number',
+      attrs: { step: '0.01' },
+      oninput: el => {
+        let val = el.value
+        let o = selection.selected[0]
+        let n = parseFloat(val)
+        if (o && !isNaN(n)) o.rotation.z = n * Math.PI / 180
+        
+        helpers.outline(selection.selected[0])
+      }
+    },
+    { type: 'sep' },
+    { type: 'h5', text: 'Scale' },
+    {
+      label: 'X',
+      id: 'scl-x',
+      type: 'number',
+      attrs: { step: '0.01' },
+      oninput: el => {
+        let val = el.value
+        let o = selection.selected[0]
+        let n = parseFloat(val)
+        if (o && !isNaN(n)) o.scale.x = n
+        
+        helpers.outline(selection.selected[0])
+      }
+    },
+    {
+      label: 'Y',
+      id: 'scl-y',
+      type: 'number',
+      attrs: { step: '0.01' },
+      oninput: el => {
+        let val = el.value
+        let o = selection.selected[0]
+        let n = parseFloat(val)
+        if (o && !isNaN(n)) o.scale.y = n
+        
+        helpers.outline(selection.selected[0])
+      }
+    },
+    {
+      label: 'Z',
+      id: 'scl-z',
+      type: 'number',
+      attrs: { step: '0.01' },
+      oninput: el => {
+        let val = el.value
+        let o = selection.selected[0]
+        let n = parseFloat(val)
+        if (o && !isNaN(n)) o.scale.z = n
+        
+        helpers.outline(selection.selected[0])
+      }
+    }
+  ]
+})
+ui.align(
+  '#object-property-panel',
+  ['#side-bar', 'right'],
+  ['#side-bar', 'top', true]
+)
+ui.borderResize(
+  '#object-property-panel'
+)
+
 function updateProperties() {
   let o = selection.selected[0]
   if (!o) return
@@ -714,60 +732,6 @@ function updateProperties() {
   setValue('#scl-y', round(o.scale.y))
   setValue('#scl-z', round(o.scale.z))
 }
-
-// - - - #transform-bar - - -
-ui.build({
-  type: 'bar',
-  id: 'transform-bar',
-  direction: 'row',
-  class: 'rad-br',
-  content: [
-    {
-      type: 'btn',
-      icon: 'arrows',
-      group: 'transform',
-      active: true,
-      tooltip: 'Transform: Position',
-      onclick: () => {
-        transform.setMode('translate')
-      }
-    }, // Position
-    {
-      type: 'btn',
-      icon: 'rotate',
-      group: 'transform',
-      tooltip: 'Transform: Rotation',
-      onclick: () => {
-        transform.setMode('rotate')
-      }
-    }, // Rotation
-    {
-      type: 'btn',
-      icon: 'expand',
-      group: 'transform',
-      tooltip: 'Transform: Scale',
-      onclick: () => {
-        transform.setMode('scale')
-      }
-    }, // Scale
-  ]
-})
-ui.align(
-  '#transform-bar',
-  ['#top-bar', 'bottom'],
-  ['body', 'left', true],
-)
-
-// View Cube
-ui.build({
-  type: 'div',
-  id: 'view-cube'
-})
-ui.align(
-  '#view-cube',
-  ['#outliner', 'left'],
-  ['#top-bar', 'bottom']
-)
 
 // - - - #action-bar - - -
 ui.build({
@@ -841,552 +805,6 @@ ui.align(
 )
 
 
-// - - - #add-menu - - -
-ui.build({
-  type: 'dropdown',
-  id: 'add-menu',
-  hidden: true,
-  autoAlign: true,
-  content: [
-    {
-      type: 'btn',
-      icon: 'cube',
-      text: 'Mesh',
-      dropdown: '#add-mesh-menu',
-      tooltip: 'Add Primitives >',
-    }, // Mesh
-    {
-      type: 'btn',
-      icon: 'lightbulb',
-      text: 'Light',
-      dropdown: '#add-light-menu',
-      tooltip: 'Add Lights >',
-    }, // Light
-    {
-      type: 'btn',
-      icon: 'video',
-      text: 'Camera',
-      onclick: () => {
-        objects.addCamera(true, 0, 0, 0)
-      }
-    }, // Camera
-    {
-      type: 'btn',
-      iconPath: './assets/icons/bone_plus.svg',
-      text: 'Bone',
-      onclick: el => {
-        objects.addBone()
-      }
-    }, // Bone
-  ]
-})
-
-ui.build({
-  type: 'dropdown',
-  id: 'add-mesh-menu',
-  hidden: true,
-  autoAlign: true,
-  content: [
-    {
-      type: 'btn',
-      icon: 'cube',
-      text: 'Cube',
-      tooltip: 'Hola, soy Cube',
-      onclick: () => {
-        let obj = objects.addMesh('Cube')
-      }
-    }, // Cube
-    {
-      type: 'btn',
-      icon: 'cube',
-      text: 'Sphere',
-      tooltip: 'Hablame por Discord, estoy aburrido',
-      onclick: () => {
-        let obj = objects.addMesh('Sphere')
-      }
-    }, // Sphere
-    {
-      type: 'btn',
-      icon: 'cube',
-      text: 'Plane',
-      tooltip: 'WTF!',
-      onclick: () => {
-        let obj = objects.addMesh('Plane')
-      }
-    }, // Plane
-    {
-      type: 'btn',
-      icon: 'cube',
-      text: 'Cylinder',
-      tooltip: 'Deja de revisar el contenido de mis botones 😆',
-      onclick: () => {
-        let obj = objects.addMesh('Cylinder')
-      }
-    }, // Cylinder
-    
-    {
-      type: 'sep'
-    }, // ---
-    
-    {
-      type: 'btn',
-      icon: 'cube',
-      text: 'Suzanne',
-      tooltip: 'Hola... Yo para nada soy el mono de Blender',
-      onclick: () => {
-        let obj = objects.addOBJMesh('./assets/models/suzanne.obj')
-      }
-    }, // Suzanne
-  ]
-}) // Mesh Menu
-ui.build({
-  type: 'dropdown',
-  id: 'add-light-menu',
-  hidden: true,
-  autoAlign: true,
-  content: [
-    {
-      type: 'btn',
-      icon: 'lightbulb',
-      text: 'Directional',
-      onclick: () => {
-        objects.addLight('Directional')
-      }
-    }, // Directional
-    {
-      type: 'btn',
-      icon: 'lightbulb',
-      text: 'Point',
-      onclick: () => {
-        objects.addLight('Point')
-      }
-    }, // Point
-    {
-      type: 'btn',
-      icon: 'lightbulb',
-      text: 'Spot',
-      onclick: () => {
-        objects.addLight('Spot')
-      }
-    }, // Spot
-  ]
-}) // Light Menu
-
-// - - - #outliner - - -
-ui.build({
-  type: 'floating-container',
-  id: 'outliner',
-})
-ui.borderResize(
-  '#outliner'
-)
-ui.align(
-  '#outliner',
-  ['#top-bar', 'bottom'],
-  ['body', 'right', true]
-)
-
-// - - - #config-menu - - -
-ui.build({
-  type: 'menu',
-  id: 'config-menu',
-  hidden: true,
-  content: [
-    {
-      type: 'side-bar',
-      content: [
-        {
-          type: 'btn',
-          icon: 'cubes',
-          text: 'Render',
-          group: 'conf-section',
-          showElement: '#render-section',
-          
-          active: true
-        }, // Render
-        {
-          type: 'btn',
-          icon: 'display',
-          text: 'Interface',
-          group: 'conf-section',
-          showElement: '#interface-section'
-        }, // Interface
-        {
-          type: 'btn',
-          icon: 'earth',
-          text: 'General',
-          group: 'conf-section',
-          showElement: '#general-section'
-        }, // General
-      ]
-    }, // SIDE SECTION
-    
-    {
-      type: 'section',
-      id: 'render-section',
-      content: [
-        {
-          type: 'h3',
-          icon: 'cubes',
-          text: 'Render'
-        }, // RENDER
-        
-        {
-          type: 'row',
-          content: [
-          {
-            type: 'div',
-            id: 'render-output',
-            style: {
-              aspectRatio: '16/9',
-            }
-          }]
-        }, // #render-output
-        {
-          type: 'row',
-          content: [
-          {
-            type: 'btn',
-            icon: 'cubes',
-            toggle: true,
-            id: 'conf-render',
-            onclick: () => {
-              let renderBtn = document.getElementById('render')
-              
-              renderBtn.classList.toggle('active')
-              
-              render()
-            }
-          },
-          {
-            type: 'btn',
-            icon: 'save',
-            text: 'save',
-            onclick: () => saveRender()
-          },
-          {
-            type: 'btn',
-            icon: 'video',
-            text: 'Render',
-            hidden: true
-          }, ]
-        }, // IMAGE - SAVE
-        
-        {
-          type: 'row',
-          content: [
-          {
-            type: 'btn',
-            text: `Camera`,
-            icon: 'video',
-            dropdown: '#scene-cameras',
-            class: 'w-full',
-            decoration: 'dropdown-left',
-            onclick: function() {
-              listCameras()
-            }
-          }]
-        }, // CAMERA
-        
-        {
-          type: 'sep'
-        }, // ---
-        
-        {
-          type: 'h4',
-          text: 'Post-processing',
-          hidden: true,
-        }, // POST PROCESSING
-        
-        {
-          type: 'row',
-          hidden: true,
-          content: [
-          {
-            type: 'checkbox',
-            label: 'Soft Shadows',
-            onclick: () => {
-              toggleSoftShadows()
-            }
-          }]
-        }, // soft shadows []
-        {
-          type: 'row',
-          hidden: true,
-          content: [
-          {
-            type: 'checkbox',
-            label: 'Ambient Occlusion',
-          }]
-        }, // abient occlussion []
-        {
-          type: 'row',
-          hidden: true,
-          content: [
-          {
-            type: 'checkbox',
-            label: 'Bloom',
-          }]
-        }, // bloom []
-      ]
-    }, // RENDER SECTION
-    {
-      type: 'section',
-      id: 'interface-section',
-      hidden: true,
-      content: [
-        {
-          type: 'h3',
-          icon: 'display',
-          text: 'Interface',
-        }, // INTERFACE
-        
-        {
-          type: 'h4',
-          text: 'Performance'
-        }, // PERFORMANCE 
-        
-        {
-          type: 'row',
-          content: [
-          {
-            type: 'checkbox',
-            label: 'Antialiasing',
-            attrs: {
-              checked: true
-            },
-            onchange: el => {
-              configs.viewport.antialias = el.checked
-              
-              restartRenderer()
-            }
-          }]
-        }, // ANTIALIAS
-        {
-          type: 'row',
-          content: [
-          {
-            type: 'checkbox',
-            label: 'Click Sound',
-            attrs: {
-              checked: true
-            },
-            onchange: el => {
-              configs.viewport.sounds = el.checked
-            }
-          }]
-        }, // CLICK SOUND
-        {
-          type: 'row',
-          content: [
-          {
-            type: 'strong',
-            text: 'Resolution'
-          },
-          {
-            type: 'slider',
-            attrs: {
-              min: '0.8',
-              max: '2',
-              step: '0.1',
-              value: configs.viewport.pxRatio,
-              title: 'Pixel Ratio: ' + configs.viewport.pxRatio
-            },
-            oninput: el => {
-              configs.viewport.pxRatio = el.value
-              renderer.setPixelRatio(el.value)
-              
-              el.title = `Pixel Ratio: ${el.value}`
-            }
-          }]
-        }, // RESOLUTION
-        
-        {
-          type: 'h4',
-          text: 'Camera Controls'
-        }, // CAMERA
-        
-        {
-          type: 'row',
-          content: [
-          {
-            type: 'number',
-            label: 'Rotation Velocity',
-            attrs: {
-              value: configs.camera.rotateSpeed
-            },
-            oninput: el => {
-              configs.camera.rotateSpeed = el.value
-            }
-          }]
-        }, // ROTATION SPEED
-        {
-          type: 'row',
-          content: [
-          {
-            type: 'number',
-            label: 'Zoom Velocity',
-            attrs: {
-              value: configs.camera.zoomSpeed
-            },
-            oninput: el => {
-              configs.camera.zoomSpeed = el.value
-            }
-          }]
-        }, // ZOOM SPEED
-        {
-          type: 'row',
-          content: [
-          {
-            type: 'number',
-            label: 'Pan Velocity',
-            attrs: {
-              value: configs.camera.panSpeed
-            },
-            oninput: el => {
-              configs.camera.panSpeed = el.value
-            }
-          }]
-        }, // PAN SPEED
-        
-        {
-          type: 'h4',
-          text: 'Transform Controls'
-        }, // Transform Controls
-        
-        {
-          type: 'row',
-          content: [
-          {
-            type: 'number',
-            label: 'Position Snap',
-            attrs: {
-              value: configs.transform.positionSnap
-            },
-            oninput: el => {
-              configs.transform.positionSnap = el.value
-              
-              snap()
-              snap()
-            }
-          }]
-        }, // POSITION SNAP
-        {
-          type: 'row',
-          content: [
-          {
-            type: 'number',
-            label: 'Rotation Snap',
-            attrs: {
-              value: configs.transform.rotationSnap
-            },
-            oninput: el => {
-              configs.transform.rotationSnap = el.value
-              snap()
-              snap()
-            }
-          }]
-        }, // ROTATION SNAP
-        {
-          type: 'row',
-          content: [
-          {
-            type: 'number',
-            label: 'Scale Snap',
-            attrs: {
-              value: configs.transform.scaleSnap
-            },
-            oninput: el => {
-              configs.transform.scaleSnap = el.value
-              snap()
-              snap()
-            }
-          }]
-        }, // SCALE SNAP
-        
-      ]
-    }, // INTERFACE SECTION
-    {
-      type: 'section',
-      id: 'general-section',
-      hidden: true,
-      content: [
-        {
-          type: 'h3',
-          icon: 'earth',
-          text: 'General'
-        },
-        {
-          type: 'checkbox',
-          label: 'Auto select on Add',
-          attrs: {
-            checked: true
-          },
-          onchange: el => {
-            configs.viewport.autoSelect = el.checked
-          }
-        }, // AUTO SELECT
-        
-        {
-          type: 'sep'
-        },
-        
-        {
-          type: 'btn',
-          text: 'Clear all Projects',
-          onclick: el => {
-            ui.show('#clear-projects-modal')
-            projects.clear()
-          }
-        },
-      ]
-    }, // GENERAL SECTION
-  ]
-})
-
-
-ui.build({
-  type: 'dropdown',
-  id: 'scene-cameras',
-  hidden: true,
-  autoAlign: true,
-})
-
-function listCameras() {
-  ui.clear('#scene-cameras')
-  
-  ui.build({
-    type: 'btn',
-    icon: 'video',
-    text: 'mainCamera',
-    onclick: () => {
-      camera = actions.jump(mainCamera)
-      
-      renderImage()
-    }
-  }, '#scene-cameras')
-  
-  ui.build({
-    type: 'sep'
-  }, '#scene-cameras')
-  
-  scene.traverse((child) => {
-    if (child.isCamera && child !== mainCamera) {
-      ui.build({
-        type: 'btn',
-        icon: 'video',
-        text: `${child.name || 'Unnamed Camera'}`,
-        onclick: () => {
-          camera = actions.jump(child)
-          
-          renderImage()
-        }
-      }, '#scene-cameras')
-    }
-  })
-}
-
-
 // - - - ANIMATION - - -
 ui.build({
   type: 'div',
@@ -1449,12 +867,12 @@ ui.build({
     }, // TIMELINE
   ]
 })
-
 ui.borderResize(
   '#animation-timeline',
 )
 
-// - - - EDIT TOOLS - - -
+
+
 // #face-toolbar
 ui.build({
   type: 'bar',
@@ -1597,239 +1015,4 @@ ui.build({
       }
     },
   ]
-})
-
-
-
-// - - - ALL MODALS - - -
-ui.build({
-  type: 'dropdown',
-  id: 'object-context-menu',
-  hidden: true,
-  content: [
-  {
-    type: 'btn',
-    icon: 'circle',
-    text: 'Shade Smooth',
-    onclick: el => {
-      
-    }
-  }]
-})
-
-const viewport = document.querySelector('#viewport');
-viewport.addEventListener('doubletouch', (e) => {
-  actions.undo()
-});
-viewport.addEventListener('tripletouch', (e) => {
-  actions.redo()
-});
-
-
-
-// #project-name-modal
-ui.build({
-  type: 'modal',
-  id: 'project-name-modal',
-  hidden: true,
-  onaccept: (modal) => {
-    let input = modal.querySelector('input[type="text"]')
-    let name = input.value
-    
-    if (!saved) {
-      projects.save(name)
-      
-      saved = true
-      projectName = name
-    }
-  },
-  content: [
-  {
-    type: 'p',
-    icon: 'save',
-    text: 'Save Project'
-  },
-  {
-    type: 'text',
-    attrs: {
-      value: 'New Project'
-    }
-  }]
-})
-
-// #clear-projects-modal
-ui.build({
-  type: 'modal',
-  hidden: true,
-  id: 'clear-projects-modal',
-  onaccept: el => {
-    projects.clear()
-  },
-  content: [
-  {
-    type: 'strong',
-    class: 'alert',
-    icon: 'warn',
-    text: 'Are you sure you want to delete all your projects? This action cannot be undone'
-  }]
-})
-
-
-// --- FEEDBACK ---
-ui.build({
-  type: 'div',
-  id: 'overlay',
-  hidden: true,
-  onclick: el => hideAll()
-})
-
-// #splash-screen
-ui.build({
-  type: 'container',
-  id: 'splash-screen',
-  hidden: true,
-  style: {
-    width: '80%',
-    maxHeight: '300px',
-    border: 'solid var(--bg-3)',
-    padding: 'var(--spc-lg)'
-  },
-  content: [
-    {
-      type: 'row',
-      style: {
-        marginBottom: '10px'
-      },
-      content: [
-      {
-        type: 'img',
-        class: 'logo',
-        src: 'assets/images/logo.png'
-      },
-      {
-        type: 'div',
-        class: 'flex',
-        direction: 'column',
-        content: [
-        {
-          type: 'h3',
-          style: {
-            margin: 0
-          },
-          text: `Nexel3d (${configs.nexel.version})`
-        },
-        {
-          icon: 'tools',
-          type: 'strong',
-          style: {
-            color: '#29f'
-          },
-          text: `${configs.nexel.updateName}`
-        }]
-      }]
-    },
-    {
-      type: 'sep'
-    },
-    {
-      type: 'h5',
-      style: {
-        textAlign: 'justify'
-      },
-      text: `Welcome to version ${configs.nexel.version}. This is only a test version, so you may encounter some issues. If so, please report them on the official server.`
-    },
-    {
-      type: 'sep'
-    },
-    {
-      type: 'h4',
-      text: "What's new? :",
-      decoration: 'dropdown',
-      class: 'collapsable',
-      toggleElement: '#splash-content'
-    },
-    {
-      type: 'ul',
-      id: 'splash-content',
-      hidden: true,
-      content: [
-        {
-          type: 'h5',
-          text: 'TOTAL RESTART'
-        },
-        {
-          type: 'li',
-          text: 'The project has been completely restarted, removing broken and unnecessary features to improve performance, quality, and workflow. The user interface has also been fully redesigned.'
-        },
-        {
-          type: 'sep'
-        },
-        {
-          type: 'h5',
-          text: 'Initial Features'
-        },
-        { type: 'li', text: 'UI navigation' },
-        { type: 'li', text: 'Object selection and transformation' },
-        { type: 'li', text: 'Material editing' },
-        { type: 'li', text: 'Project saving' },
-        { type: 'li', text: 'Timeline and basic animation' },
-        { type: 'li', text: 'Image rendering and export' },
-        { type: 'li', text: 'Various function settings' },
-        {
-          type: 'sep'
-        },
-        {
-          type: 'h5',
-          text: 'CONFIRMED Upcoming Features'
-        },
-        { type: 'li', text: 'Soft shadows' },
-        { type: 'li', text: 'Ambient occlusion' },
-        { type: 'li', text: 'Advanced keyframe editing' }
-      ]
-    },
-    
-    {
-      type: 'row',
-      content: [
-      {
-        type: 'strong',
-        text: 'by CubeMania MC'
-      }]
-    },
-    {
-      type: 'row',
-      content: [
-      {
-        type: 'btn',
-        content: [
-          { type: 'i', class: 'fab fa-discord', style: { color: '#45f', fontSize: '1.5em' } }
-        ],
-        text: 'Discord',
-        onclick: el => {
-          window.open('https://discord.gg/3DQzWEfk')
-        }
-      },
-      {
-        type: 'btn',
-        content: [
-          { type: 'i', class: 'fab fa-youtube', style: { color: '#f32', fontSize: '1.5em' } }
-        ],
-        text: 'YouTube',
-        onclick: el => {
-          window.open('https://youtube.com/@cubemania_mc_4558?si=qjsaAllowZuq5WGx')
-        }
-      }]
-    }
-  ]
-})
-
-
-let buttons = document.querySelectorAll('.btn')
-
-buttons.forEach((btn) => {
-  btn.addEventListener('click', () => {
-    if (configs.viewport.sounds) {
-      ui.playSound('assets/sounds/click.mp3', 0.1, false)
-    }
-  })
 })

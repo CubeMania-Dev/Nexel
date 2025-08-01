@@ -89,6 +89,8 @@ html, body {
     right: 0;
     min-width: 20px;
     min-height: 20px;
+    color: var(--text-1);
+    font-weight: bold;
     padding: 0;
     margin: var(--spc-md);
     border: none;
