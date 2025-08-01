@@ -215,8 +215,7 @@ ui.build({
 })
 ui.align(
   '#side-bar',
-  ['#transform-bar', 'bottom'],
-  ['#animation-timeline', 'top']
+  ['#transform-bar', 'bottom']
 )
 
 // - - - #transform-bar - - -
