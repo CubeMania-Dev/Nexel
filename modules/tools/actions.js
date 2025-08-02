@@ -26,17 +26,10 @@ copy(objects) {
   
   const arr = Array.isArray(objects) ? objects : [objects]
   this.clipboard = arr.map(obj => {
-    let clone
+    const clone = obj.clone(true)
     if (obj.isMesh) {
-      const geometry = obj.geometry.clone()
-      const material = Array.isArray(obj.material) ?
-        obj.material.map(m => m.clone()) :
-        obj.material.clone()
-      clone = new obj.constructor(geometry, material)
-    } else {
-      clone = obj.clone(true)
+      clone.geometry = obj.geometry.clone()
     }
-    
     return {
       original: obj,
       clone,
@@ -51,17 +44,10 @@ paste() {
   if (!this.clipboard || this.clipboard.length === 0) return false
   
   const clones = this.clipboard.map(entry => {
-    let newClone
+    const newClone = entry.clone.clone(true)
     if (entry.clone.isMesh) {
-      const geometry = entry.clone.geometry.clone()
-      const material = Array.isArray(entry.clone.material) ?
-        entry.clone.material.map(m => m.clone()) :
-        entry.clone.material.clone()
-      newClone = new entry.clone.constructor(geometry, material)
-    } else {
-      newClone = entry.clone.clone(true)
+      newClone.geometry = entry.clone.geometry.clone()
     }
-    
     if (entry.parent) entry.parent.add(newClone)
     return newClone
   })
@@ -69,14 +55,16 @@ paste() {
   return clones.length === 1 ? clones[0] : clones
 }
   
-  duplicate(objects) {
-    if (!objects) return
-    
-    this.copy(objects)
-    this.paste(objects)
-    
-    this.onAction()
-  }
+duplicate(objects) {
+  if (!objects) return
+  
+  this.copy(objects)
+  let duplicated = this.paste()
+  
+  this.onAction()
+  
+  return duplicated
+}
   
   hide(objects) {
     if (!objects) return

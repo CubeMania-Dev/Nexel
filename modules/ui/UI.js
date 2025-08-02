@@ -227,6 +227,7 @@ ui.build({
   content: [
     {
       type: 'btn',
+      id: 'pos-btn',
       icon: 'arrows',
       group: 'transform',
       active: true,
@@ -237,6 +238,7 @@ ui.build({
     }, // Position
     {
       type: 'btn',
+      id: 'rot-btn',
       icon: 'rotate',
       group: 'transform',
       tooltip: 'Transform: Rotation',
@@ -246,6 +248,7 @@ ui.build({
     }, // Rotation
     {
       type: 'btn',
+      id: 'scl-btn',
       icon: 'expand',
       group: 'transform',
       tooltip: 'Transform: Scale',
@@ -762,6 +765,8 @@ ui.build({
         if (selection.type === 'object') {
           helpers.outline(null)
           let dup = actions.duplicate(selection.selected)
+          selection._select(dup)
+          transform.setMode('translate')
         }
       }
     }, // Clone
@@ -896,6 +901,7 @@ ui.build({
     onclick: () => {
       actions.saveState('geometry', selection.selectedMesh)
       extrudeFace(0)
+      transform.setMode('translate')
     }
   }]
 })
@@ -924,6 +930,7 @@ ui.build({
     onclick: () => {
       actions.saveState('geometry', selection.selectedMesh)
       extrudeSegment(0)
+      transform.setMode('translate')
     }
   }]
 })
@@ -973,6 +980,7 @@ ui.build({
       minText: 'Add',
       onclick: () => {
         objects.addBone()
+        transform.setMode('translate')
       }
     },
     {

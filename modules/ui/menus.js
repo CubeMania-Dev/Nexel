@@ -362,11 +362,13 @@ ui.build({
         
         {
           type: 'h4',
-          text: 'Theme'
+          text: 'Theme',
+          hidden: true
         }, // THEME
         
         {
           type: 'row',
+          hidden: true,
           content: [
             {
               type: 'btn',
