@@ -1,7 +1,18 @@
+.special {
+  color: #0f9;
+  
+  * {
+    color: inherit;
+  }
+}
+
 .logo {
   width: 45px;
   height: 45px;
-  border-radius: 10px;
+}
+
+#side-bar {
+  overflow: auto;
 }
 
 #outliner {
@@ -274,4 +285,10 @@
   height: 20px;
   background: #fff;
   border-radius: var(--spc-xs);
+}
+
+@media (orientation: landscape) {
+  #side-bar {
+    height: 200px;
+  }
 }

@@ -27,7 +27,6 @@ function initRenderer() {
 		canvas: canvas,
 		alpha: configs.viewport.alpha,
 		antialias: configs.viewport.antialias,
-		powerPerformance: 'high-performance'
 	})
 	
 	renderer.useLegacyLights = false
@@ -35,7 +34,8 @@ function initRenderer() {
 	renderer.shadowMap.type = configs.render.shadowType
 	renderer.setSize(configs.viewport.w, configs.viewport.h)
 	renderer.setPixelRatio(configs.viewport.pxRatio)
-	renderer.setClearColor(configs.viewport.background)
+	
+	// renderer.setClearColor(configs.viewport.background)
 }
 
 initRenderer()

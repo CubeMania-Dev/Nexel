@@ -66,13 +66,12 @@ ui.build({
         }, // ---
         
         {
-          type: 'btn',
-          icon: 'border-all',
-          onclick: el => fullscreen()
+          
         },
         
         {
-          type: 'sep'
+          type: 'sep',
+          class: 'right'
         }, // ---
       ]
     }, // EXTRA FUNCTIONS
@@ -847,7 +846,7 @@ ui.build({
         }, // FORWARD
         
         {
-           type: 'sep'
+          type: 'sep'
         },
         
         {
@@ -885,25 +884,51 @@ ui.build({
   class: 'rad-top',
   position: { bottom: 0 },
   content: [
-  {
-    type: 'btn',
-    icon: 'close',
-    minText: 'Delete',
-    onclick: () => {
-      actions.saveState('geometry', selection.selectedMesh)
-      deleteFace()
-    }
-  },
-  {
-    type: 'btn',
-    iconPath: './assets/icons/tool_extrude_face.svg',
-    minText: 'Extrude',
-    onclick: () => {
-      actions.saveState('geometry', selection.selectedMesh)
-      extrudeFace(0)
-      transform.setMode('translate')
-    }
-  }]
+    {
+      type: 'btn',
+      icon: 'close',
+      minText: 'Delete',
+      onclick: () => {
+        actions.saveState('geometry', selection.selectedMesh)
+        deleteFace()
+      }
+    }, // DELETE
+    
+    {
+      type: 'sep'
+    }, // ---
+    
+    {
+      type: 'btn',
+      iconPath: './assets/icons/tool_extrude_face.svg',
+      minText: 'Extrude',
+      onclick: () => {
+        actions.saveState('geometry', selection.selectedMesh)
+        extrudeFace(0)
+        transform.setMode('translate')
+      }
+    }, // EXTRUDE
+    {
+      type: 'btn',
+      iconPath: './assets/icons/tool_rebuild_face.svg',
+      minText: 'Rebuild',
+      onclick: () => {
+        actions.saveState('geometry', selection.selectedMesh)
+        rebuild()
+        transform.setMode('translate')
+      }
+    }, // REBUILD
+    {
+      type: 'btn',
+      iconPath: './assets/icons/tool_collapse.svg',
+      minText: 'Collapse',
+      onclick: () => {
+        actions.saveState('geometry', selection.selectedMesh)
+        collapseFace()
+        transform.setMode('translate')
+      }
+    }, // COLLAPSE
+  ]
 })
 
 // #segment-toolbar
@@ -932,7 +957,17 @@ ui.build({
       extrudeSegment(0)
       transform.setMode('translate')
     }
-  }]
+  },
+  {
+    type: 'btn',
+    iconPath: './assets/icons/tool_collapse.svg',
+    minText: 'Collapse',
+    onclick: () => {
+      actions.saveState('geometry', selection.selectedMesh)
+      collapseSegment()
+      transform.setMode('translate')
+    }
+  }, ]
 })
 
 // #vertex-toolbar
@@ -951,7 +986,18 @@ ui.build({
       actions.saveState('geometry', selection.selectedMesh)
       deleteVertex()
     }
-  }]
+  },
+  {
+    type: 'btn',
+    iconPath: './assets/icons/tool_collapse.svg',
+    minText: 'Collapse',
+    hidden: true,
+    onclick: () => {
+      actions.saveState('geometry', selection.selectedMesh)
+      collapseVertices()
+      transform.setMode('translate')
+    }
+  }, ]
 })
 
 // #rigging-toolbar
@@ -974,6 +1020,11 @@ ui.build({
         }
       }
     },
+    
+    {
+      type: 'sep',
+    },
+    
     {
       type: 'btn',
       iconPath: './assets/icons/bone_plus.svg',
@@ -1009,7 +1060,8 @@ ui.build({
     },
     
     {
-      type: 'sep'
+      type: 'sep',
+      hidden: true
     },
     
     {

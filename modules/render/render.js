@@ -1,8 +1,5 @@
 let softShadows = new SoftShadow({
-  enabled: configs.render.softShadows,
-  softness: 0.01,
-  rings: 2,
-  samples: 20
+  enabled: ui.loadFromLocal('softShadows') || false
 })
 
 function render() {

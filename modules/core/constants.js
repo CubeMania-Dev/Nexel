@@ -1,9 +1,9 @@
 let configs = {
   nexel: {
-    name: 'Nexel3D',
-    version: '2.0 Beta',
+    name: 'Nexel',
+    version: '2.0 b1',
     updateName: 'Modeling Update',
-    date: '24 / 7 / 2025',
+    date: '...',
     creator: 'CubeMania MC'
   },
   
@@ -15,9 +15,9 @@ let configs = {
     
     pxRatio: window.devicePixelRatio,
     antialias: false,
-    alpha: false,
+    alpha: true,
     
-    sounds: true,
+    sounds: false,
     autoSelect: true,
     
     splashScreen: true,
@@ -91,3 +91,20 @@ let
 // material.js
 let mapTarget = 'map'
 let textureLoader = new THREE.TextureLoader()
+
+
+
+let testerCodes = [
+  'Nexel2_SpecialKey_18D2F3A7E5A_8F4A9C1B',
+  'Nexel2_SpecialKey_1AC3E7B2D9F_3E7D1A8C',
+  'Nexel2_SpecialKey_19B4C8D7A2E_7C3F9D0A',
+  'Nexel2_SpecialKey_1DF7A9C3B6E_2A5C8F9D',
+  'Nexel2_SpecialKey_1BE8D2F9C7A_6F1E3B4D',
+  'Nexel2_SpecialKey_1C9A3F7D8E2_5B6D0C3A',
+  'Nexel2_SpecialKey_1E3B7A9D6F4_9A2C7D1E',
+  'Nexel2_SpecialKey_1F6D2A9C3B7_4C8F0E1A',
+  'Nexel2_SpecialKey_1A7B9C4D6F3_0D5E8A2C',
+  'Nexel2_SpecialKey_1C2D8F7A9B5_3A6E0D1F'
+]
+
+let testerUser = false

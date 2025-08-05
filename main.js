@@ -52,12 +52,20 @@ initControls = function() {
       renderPreview = true
       updateRenderState()
     }
+    
+    if (selection.mode === 'rect') {
+      controls.enabled = false
+    }
   })
   
   controls.addEventListener('end', () => {
     if (renderEnabled) {
       renderPreview = false
       updateRenderState()
+    }
+    
+    if (selection.mode === !'rect') {
+      controls.enabled = true 
     }
   })
 }
@@ -223,7 +231,8 @@ objects.addLight('ambient', 0.2)
 
 cursor = objects.setCursor(0, 0, 0)
 
-objects.addMesh('Cube')
+let cube = objects.addMesh('Cube')
+mergeVertices(cube.geometry)
 objects.addCamera(true, 2.5, 1, 0)
 objects.addLight('Directional', true, -3, 6, 3.5)
 
@@ -316,6 +325,10 @@ onResize()
 
 window.addEventListener('resize', onResize)
 
+window.addEventListener('longpress', e => {
+  // selection.setMode('rect')
+})
+
 
 function animate() {
   animationId = requestAnimationFrame(animate)
@@ -328,7 +341,6 @@ function animate() {
   }
 }
 
-
 window.onload = () => {
   animate()
   
@@ -339,4 +351,6 @@ window.onload = () => {
   updateRenderState()
   
   outliner.refresh()
+  
+  ui.loadTheme()
 }

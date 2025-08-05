@@ -7,6 +7,8 @@ ui.build({
 })
 
 // #splash-screen
+testerUser = ui.loadFromLocal('testerUser')
+
 ui.build({
   type: 'container',
   id: 'splash-screen',
@@ -36,7 +38,7 @@ ui.build({
       {
         type: 'img',
         class: 'logo',
-        src: 'assets/images/logo.png'
+        src: 'assets/images/logo_vector.svg'
       },
       {
         type: 'div',
@@ -48,7 +50,7 @@ ui.build({
           style: {
             margin: 0
           },
-          text: `Nexel3d (${configs.nexel.version})`
+          text: `Nexel ${configs.nexel.version}`
         },
         {
           icon: 'tools',
@@ -62,20 +64,12 @@ ui.build({
     }, // LOGO + VERSION
     
     {
-      type: 'sep'
-    }, // ---
-    
-    {
-      type: 'h5',
-      style: {
-        textAlign: 'justify'
-      },
-      text: `Welcome to version ${configs.nexel.version}. This is only a test version, so you may encounter some issues. If so, please report them on the official server.`
-    }, // WELCOME TEXT
-    
-    {
-      type: 'sep'
-    }, // ---
+      type: 'strong',
+      class: 'special',
+      icon: 'check',
+      text: 'Tester Functions Enabled',
+      hidden: !testerUser,
+    },
     
     {
       type: 'h4',
@@ -90,54 +84,123 @@ ui.build({
       id: 'splash-content',
       hidden: true,
       content: [
+        
         {
           type: 'h5',
-          text: 'TOTAL RESTART'
+          text: 'Added'
+        }, // ADDED
+        
+        {
+          type: 'li',
+          text: '- Special Keys for Testers'
         },
         {
           type: 'li',
-          text: 'The project has been completely restarted, removing broken and unnecessary features to improve performance, quality, and workflow. The user interface has also been fully redesigned.'
+          text: '- Interface Themes'
         },
         {
-          type: 'sep'
+          type: 'li',
+          text: '- More edit mode tools'
         },
         {
-          type: 'h5',
-          text: 'Initial Features'
-        },
-        { type: 'li', text: 'UI navigation' },
-        { type: 'li', text: 'Object selection and transformation' },
-        { type: 'li', text: 'Material editing' },
-        { type: 'li', text: 'Project saving' },
-        { type: 'li', text: 'Timeline and basic animation' },
-        { type: 'li', text: 'Image rendering and export' },
-        { type: 'li', text: 'Various function settings' },
-        {
-          type: 'sep'
+          type: 'li',
+          class: 'special',
+          text: '- Model import .obj, .gltf/.glb (TESTER)'
         },
         {
-          type: 'h5',
-          text: 'CONFIRMED Upcoming Features'
+          type: 'li',
+          class: 'special',
+          text: '- Soft Shadows (TESTER)'
         },
-        { type: 'li', text: 'Soft shadows' },
-        { type: 'li', text: 'Ambient occlusion' },
-        { type: 'li', text: 'Advanced keyframe editing' },
         
         {
           type: 'sep'
+        }, // ---
+        
+        {
+          type: 'h5',
+          text: 'Fixed'
+        }, // FIXED
+        
+        {
+          type: 'li',
+          text: '- Objects faces disconnected'
         },
+        {
+          type: 'li',
+          text: '- Uncontrolled object transformation (position and scale)'
+        },
+        
+        {
+          type: 'sep'
+        }, // ---
+        
+        {
+          type: 'h5',
+          text: 'Removed'
+        }, // REMOVED
+        
+        {
+          type: 'li',
+          text: '- Fullscreen Button (TEMPORARY)'
+        },
+        
+        {
+          type: 'sep'
+        }, // ---
         
         {
           type: 'h5',
           text: 'Thanks to the testers'
-        },
+        }, // THANK TO THE TESTERS
         
         {
           type: 'li',
+          class: 'special',
           text: 'GIAL --- COCHU_444 --- A.A.K --- DECA --- BROCK --- VERDESITOO --- WILLINHO --- DIZZEY --- CONGRAY_MC'
         }
       ]
     }, // WHAT'S NEW 'CONTENT'
+    
+    {
+      type: 'sep'
+    }, // ---
+    
+    {
+      type: 'row',
+      hidden: testerUser,
+      content: [
+        {
+          type: 'text',
+          label: 'Tester Key',
+          attrs: {
+            placeholder: '...special key',
+            id: 'testerKey'
+          },
+          content: [
+            {
+              type: 'btn',
+              icon: 'check',
+              text: 'Verify',
+              accent: true,
+              onclick(el) {
+                let key = ui.get('#testerKey').value
+                if (testerCodes.includes(key)) {
+                  ui.show('#verified-tester-modal')
+                } else {
+                  ui.show('#no-tester-modal')
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }, // TESTER KEY
+    
+    {
+      type: 'sep',
+      hidden: testerUser,
+    }, // ---
     
     {
       type: 'row',
@@ -147,10 +210,6 @@ ui.build({
         text: 'by CubeMania MC'
       }]
     }, // BY CUBEMANIA
-    
-    {
-      type: 'sep'
-    }, // ---
     
     {
       type: 'row',

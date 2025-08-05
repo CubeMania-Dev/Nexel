@@ -47,6 +47,19 @@ ui.build({
         objects.addBone()
       }
     }, // Bone
+    
+    {
+      type: 'sep',
+      hidden: !testerUser
+    }, // ---
+    
+    {
+      type: 'btn',
+      icon: 'arrow-right',
+      text: 'import',
+      hidden: !testerUser,
+      onclick: el => objects.import()
+    } // IMPORT
   ]
 })
 
@@ -63,6 +76,7 @@ ui.build({
       tooltip: 'Hola, soy Cube',
       onclick: () => {
         let obj = objects.addMesh('Cube')
+        mergeVertices(obj.geometry)
       }
     }, // Cube
     {
@@ -72,6 +86,7 @@ ui.build({
       tooltip: 'Hablame por Discord, estoy aburrido',
       onclick: () => {
         let obj = objects.addMesh('Sphere')
+        mergeVertices(obj.geometry)
       }
     }, // Sphere
     {
@@ -81,6 +96,7 @@ ui.build({
       tooltip: 'WTF!',
       onclick: () => {
         let obj = objects.addMesh('Plane')
+        mergeVertices(obj.geometry)
       }
     }, // Plane
     {
@@ -90,6 +106,7 @@ ui.build({
       tooltip: 'Deja de revisar el contenido de mis botones 😆',
       onclick: () => {
         let obj = objects.addMesh('Cylinder')
+        mergeVertices(obj.geometry)
       }
     }, // Cylinder
     
@@ -244,27 +261,30 @@ ui.build({
         }, // CAMERA
         
         {
-          type: 'sep'
+          type: 'sep',
+          hidden: !testerUser
         }, // ---
         
         {
           type: 'h4',
           text: 'Post-processing',
-          hidden: true,
+          hidden: !testerUser,
         }, // POST PROCESSING
         
         {
           type: 'row',
-          hidden: true,
+          hidden: !testerUser,
+          checked: true,
           content: [
           {
             type: 'checkbox',
             label: 'Soft Shadows',
-            onclick: () => {
-              toggleSoftShadows()
+            onclick: el => {
+              ui.saveToLocal('softShadows', el.checked)
+              reload()
             }
           }]
-        }, // soft shadows []
+        }, // soft shadows
         {
           type: 'row',
           hidden: true,
@@ -307,9 +327,6 @@ ui.build({
           {
             type: 'checkbox',
             label: 'Antialiasing',
-            attrs: {
-              checked: true
-            },
             onchange: el => {
               configs.viewport.antialias = el.checked
               
@@ -363,31 +380,35 @@ ui.build({
         {
           type: 'h4',
           text: 'Theme',
-          hidden: true
         }, // THEME
         
         {
           type: 'row',
-          hidden: true,
           content: [
             {
               type: 'btn',
               icon: 'palette',
               text: 'Dark',
+              id: 'dark-theme-btn',
               group: 'theme',
-              active: true
+              active: true,
+              onclick: () => ui.setTheme('dark')
             },
             {
               type: 'btn',
               icon: 'palette',
               text: 'Light',
-              group: 'theme'
+              id: 'light-theme-btn',
+              group: 'theme',
+              onclick: () => ui.setTheme('light')
             },
             {
               type: 'btn',
               icon: 'palette',
               text: 'Soft',
-              group: 'theme'
+              id: 'soft-theme-btn',
+              group: 'theme',
+              onclick: () => ui.setTheme('soft')
             },
           ]
         } // THEMES
@@ -583,4 +604,22 @@ function listCameras() {
       }, '#scene-cameras')
     }
   })
+}
+
+
+// themes
+let darkBtn = ui.get('#dark-theme-btn')
+let lightBtn = ui.get('#light-theme-btn')
+let softBtn = ui.get('#soft-theme-btn')
+
+ui.onLoadTheme = theme => {
+  if (theme == 'dark') {
+    ui.active(darkBtn)
+  }
+  else if (theme == 'light') {
+    ui.active(lightBtn)
+  }
+  else if (theme == 'soft') {
+    ui.active(softBtn)
+  }
 }

@@ -34,17 +34,26 @@ class SelectionSystem {
 	}
 }
 
-/* MODE (SINGLE - MULTI) */
+/* MODE (SINGLE - MULTI - RECT) */
 SelectionSystem.prototype.setMode = function(mode) {
+	const validModes = ['single', 'multi', 'rect']
+	if (!validModes.includes(mode)) return
+	
 	this.mode = mode
+	
 	if (mode === 'single' && this.selected.length > 1) {
 		const last = this.selected[this.selected.length - 1]
 		this.selected = [last]
 		if (this.onSelect) this.onSelect(last)
-		
 		this._deselect()
-		this.onModeChange(mode)
 	}
+	
+	if (mode === 'rect') {
+		this._deselect()
+		this._initRectVisual()
+	}
+	
+	if (this.onModeChange) this.onModeChange(mode)
 }
 
 /* TYPE (OBJECT - FACE - SEGMENT - VERTEX) */
@@ -122,7 +131,7 @@ SelectionSystem.prototype._selectObject = function() {
 			if (proj < 0) continue;
 			const pointOnRay = dir.clone().multiplyScalar(proj).add(origin);
 			const dist = pos.distanceTo(pointOnRay);
-			if (dist < threshold && proj < closestBoneDist) {
+			if (dist < threshold / 3 && proj < closestBoneDist) {
 				closestBoneDist = proj;
 				closestBone = bone;
 			}
@@ -181,65 +190,68 @@ SelectionSystem.prototype._selectFace = function() {
 		if (this.ignoredUserData.some(key => obj.userData[key])) return
 		if (obj.isMesh && obj !== this.faceHelper) meshes.push(obj)
 	})
-
+	
 	const hit = this.raycaster.intersectObjects(meshes, true)[0]
 	if (!hit || !hit.object.isMesh) return this._deselect()
-
+	
 	const mesh = hit.object
 	const geometry = mesh.geometry
 	if (!geometry || !geometry.isBufferGeometry) return this._deselect()
-
+	
 	const posAttr = geometry.attributes.position
 	const isIndexed = !!geometry.index
 	const index = isIndexed ? geometry.index.array : null
 	const faceIndex = hit.faceIndex
-
+	
 	const getTri = i => isIndexed ?
 		[index[i * 3], index[i * 3 + 1], index[i * 3 + 2]] :
 		[i * 3, i * 3 + 1, i * 3 + 2]
-
+	
 	const getVertex = i => new THREE.Vector3().fromBufferAttribute(posAttr, i)
-	const samePosition = (a, b) => getVertex(a).equals(getVertex(b))
-	const shareTwo = (a, b) => a.filter(ai => b.some(bi => isIndexed ? ai === bi : samePosition(ai, bi))).length === 2
-
 	const triA = getTri(faceIndex)
 	const vertsA = triA.map(i => getVertex(i).applyMatrix4(mesh.matrixWorld))
-	const normalA = new THREE.Vector3().subVectors(vertsA[1], vertsA[0])
-		.cross(new THREE.Vector3().subVectors(vertsA[2], vertsA[0])).normalize()
-
+	
 	let pairIndex = null
 	const triCount = isIndexed ? index.length / 3 : posAttr.count / 3
 	let bestScore = -1
-
+	
+	const normalA = new THREE.Vector3()
+		.subVectors(vertsA[1], vertsA[0])
+		.cross(new THREE.Vector3().subVectors(vertsA[2], vertsA[0]))
+		.normalize()
+	
 	for (let i = 0; i < triCount; i++) {
 		if (i === faceIndex) continue
 		const triB = getTri(i)
-		if (!shareTwo(triA, triB)) continue
+		const shared = triB.filter(v => triA.includes(v)).length
+		if (shared !== 2) continue
 		const vertsB = triB.map(j => getVertex(j).applyMatrix4(mesh.matrixWorld))
-		const normalB = new THREE.Vector3().subVectors(vertsB[1], vertsB[0])
-			.cross(new THREE.Vector3().subVectors(vertsB[2], vertsB[0])).normalize()
+		const normalB = new THREE.Vector3()
+			.subVectors(vertsB[1], vertsB[0])
+			.cross(new THREE.Vector3().subVectors(vertsB[2], vertsB[0]))
+			.normalize()
 		const score = Math.abs(normalA.dot(normalB))
 		if (score > bestScore) {
 			bestScore = score
 			pairIndex = i
 		}
 	}
-
+	
 	if (!Array.isArray(this.selectedFace)) this.selectedFace = []
 	if (this.mode === 'single') this.selectedFace.length = 0
-
+	
 	const exists = this.selectedFace.find(f => f.faceIndex === faceIndex && f.pairIndex === pairIndex)
 	if (exists) {
 		this.selectedFace = this.selectedFace.filter(f => !(f.faceIndex === faceIndex && f.pairIndex === pairIndex))
 	} else {
 		this.selectedFace.push({ faceIndex, pairIndex })
 	}
-
+	
 	if (this.selectedFace.length === 0) {
 		this._deselect()
 		return
 	}
-
+	
 	const allVerts = []
 	for (const { faceIndex, pairIndex } of this.selectedFace) {
 		allVerts.push(...getTri(faceIndex).map(i => getVertex(i).applyMatrix4(mesh.matrixWorld)))
@@ -247,12 +259,12 @@ SelectionSystem.prototype._selectFace = function() {
 			allVerts.push(...getTri(pairIndex).map(i => getVertex(i).applyMatrix4(mesh.matrixWorld)))
 		}
 	}
-
+	
 	const center = allVerts.reduce((sum, v) => sum.add(v), new THREE.Vector3()).multiplyScalar(1 / allVerts.length)
 	const local = allVerts.map(v => v.clone().sub(center))
 	const positions = new Float32Array(local.flatMap(v => [v.x, v.y, v.z]))
 	const indices = Array.from({ length: local.length }, (_, i) => i)
-
+	
 	let helper = this.faceHelper
 	if (!helper) {
 		const geom = new THREE.BufferGeometry()
@@ -269,18 +281,47 @@ SelectionSystem.prototype._selectFace = function() {
 		this.faceHelper = helper
 		this.scene.add(helper)
 	}
-
+	
 	helper.geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3))
 	helper.geometry.setIndex(indices)
 	helper.geometry.attributes.position.needsUpdate = true
 	helper.position.copy(center)
-
+	
+	// Align helper Y axis (0,1,0) to normalA
+	const up = new THREE.Vector3(0, 1, 0)
+	const normal = normalA.clone().normalize()
+	const axis = new THREE.Vector3().crossVectors(up, normal)
+	const angle = Math.acos(up.dot(normal))
+	
+	if (axis.lengthSq() < 1e-10) {
+		// up and normal are parallel or anti-parallel
+		if (up.dot(normal) < 0) {
+			// opposite direction, rotate 180 degrees around X or Z
+			helper.quaternion.setFromAxisAngle(new THREE.Vector3(1, 0, 0), Math.PI)
+		} else {
+			helper.quaternion.identity()
+		}
+	} else {
+		axis.normalize()
+		helper.quaternion.setFromAxisAngle(axis, angle)
+	}
+	
+	// Inverse rotate geometry vertices so visually no change but local rotation is applied
+	const inv = helper.quaternion.clone().invert()
+	const attr = helper.geometry.attributes.position
+	for (let i = 0; i < attr.count; i++) {
+		const v = new THREE.Vector3().fromBufferAttribute(attr, i)
+		v.applyQuaternion(inv)
+		attr.setXYZ(i, v.x, v.y, v.z)
+	}
+	attr.needsUpdate = true
+	
 	if (this.mode === 'single') {
 		this.selected = [helper]
 	} else if (!this.selected.includes(helper)) {
 		this.selected.push(helper)
 	}
-
+	
 	this.selectedMesh = mesh
 	if (this.onSelect) this.onSelect(helper)
 }
@@ -290,113 +331,104 @@ SelectionSystem.prototype._selectSegment = function() {
 		if (this.ignoredUserData.some(key => obj.userData[key])) return
 		if (obj.isMesh) meshes.push(obj)
 	})
-
+	
 	const hit = this.raycaster.intersectObjects(meshes, true)[0]
 	if (!hit || !hit.object.isMesh) return this._deselect()
-
+	
 	const mesh = hit.object
 	const geometry = mesh.geometry
 	if (!geometry || !geometry.isBufferGeometry) return this._deselect()
-
+	
 	const posAttr = geometry.attributes.position
 	const isIndexed = !!geometry.index
 	const index = isIndexed ? geometry.index.array : null
-	const faceIndex = hit.faceIndex
-
+	const faceIdx = hit.faceIndex
 	const getTri = i => isIndexed ?
 		[index[i * 3], index[i * 3 + 1], index[i * 3 + 2]] :
 		[i * 3, i * 3 + 1, i * 3 + 2]
-
-	const getVertex = i => new THREE.Vector3().fromBufferAttribute(posAttr, i)
-	const tri = getTri(faceIndex)
-	const worldVerts = tri.map(i => getVertex(i).applyMatrix4(mesh.matrixWorld))
-
+	const tri = getTri(faceIdx)
+	const worldVerts = tri.map(i => new THREE.Vector3().fromBufferAttribute(posAttr, i).applyMatrix4(mesh.matrixWorld))
+	
 	const edges = [
 		{ i1: tri[0], i2: tri[1], v1: worldVerts[0], v2: worldVerts[1] },
 		{ i1: tri[1], i2: tri[2], v1: worldVerts[1], v2: worldVerts[2] },
 		{ i1: tri[2], i2: tri[0], v1: worldVerts[2], v2: worldVerts[0] }
 	]
-
+	
 	const rayOrigin = this.raycaster.ray.origin
 	const rayDir = this.raycaster.ray.direction
-	const threshold = 0.2
-
+	const threshold = 0.3
+	
 	let closest = null
 	let minDist = Infinity
-
+	
 	for (const edge of edges) {
-		const segCenter = new THREE.Vector3().addVectors(edge.v1, edge.v2).multiplyScalar(0.5)
-		const toSeg = segCenter.clone().sub(rayOrigin)
-		const proj = toSeg.dot(rayDir)
+		const center = edge.v1.clone().add(edge.v2).multiplyScalar(0.5)
+		const toCenter = center.clone().sub(rayOrigin)
+		const proj = toCenter.dot(rayDir)
 		if (proj < 0) continue
-
 		const pointOnRay = rayDir.clone().multiplyScalar(proj).add(rayOrigin)
-		const dist = pointOnRay.distanceTo(segCenter)
-
+		const dist = pointOnRay.distanceTo(center)
 		if (dist < threshold && dist < minDist) {
 			minDist = dist
 			closest = edge
 		}
 	}
-
-	if (!closest) return this._deselect()
-
+	
+	if (!closest) {
+		return this._deselect()
+	}
+	
 	if (!Array.isArray(this.selectedSegment)) this.selectedSegment = []
 	if (this.mode === 'single') this.selectedSegment.length = 0
-
-	const exists = this.selectedSegment.find(s => (
-		(s.i1 === closest.i1 && s.i2 === closest.i2) || (s.i1 === closest.i2 && s.i2 === closest.i1)
-	))
-
+	
+	const { i1, i2 } = closest
+	const exists = this.selectedSegment.find(s =>
+		(s.i1 === i1 && s.i2 === i2) || (s.i1 === i2 && s.i2 === i1)
+	)
 	if (exists) {
-		this.selectedSegment = this.selectedSegment.filter(s => !(
-			(s.i1 === closest.i1 && s.i2 === closest.i2) || (s.i1 === closest.i2 && s.i2 === closest.i1)
-		))
-	} else {
-		this.selectedSegment.push({ i1: closest.i1, i2: closest.i2 })
+		this.selectedSegment = this.selectedSegment.filter(s =>
+			!((s.i1 === i1 && s.i2 === i2) || (s.i1 === i2 && s.i2 === i1))
+		)
+		return this._deselect()
 	}
-
-	if (this.selectedSegment.length === 0) {
-		this._deselect()
-		return
-	}
-
-	const allVerts = []
-	for (const { i1, i2 } of this.selectedSegment) {
-		allVerts.push(getVertex(i1).applyMatrix4(mesh.matrixWorld))
-		allVerts.push(getVertex(i2).applyMatrix4(mesh.matrixWorld))
-	}
-
+	
+	this.selectedSegment.push({ i1, i2 })
+	
+	const allVerts = this.selectedSegment.flatMap(({ i1, i2 }) => {
+		return [
+			new THREE.Vector3().fromBufferAttribute(posAttr, i1).applyMatrix4(mesh.matrixWorld),
+			new THREE.Vector3().fromBufferAttribute(posAttr, i2).applyMatrix4(mesh.matrixWorld)
+		]
+	})
+	
 	const center = allVerts.reduce((sum, v) => sum.add(v), new THREE.Vector3()).multiplyScalar(1 / allVerts.length)
 	const local = allVerts.map(v => v.clone().sub(center))
 	const positions = new Float32Array(local.flatMap(v => [v.x, v.y, v.z]))
 	const indices = Array.from({ length: local.length }, (_, i) => i)
-
+	
 	let helper = this.segmentHelper
 	if (!helper) {
 		const geom = new THREE.BufferGeometry()
-		const mat = new THREE.LineBasicMaterial({
-			color: 0x0080ff,
-			linewidth: 4
-		})
+		const mat = new THREE.LineBasicMaterial({ color: 0x0080ff, linewidth: 4 })
 		helper = new THREE.LineSegments(geom, mat)
 		helper.userData._segmentHelper = true
 		helper.userData.ignored = true
 		this.segmentHelper = helper
 		this.scene.add(helper)
 	}
-
+	
 	helper.geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3))
 	helper.geometry.setIndex(indices)
 	helper.geometry.attributes.position.needsUpdate = true
 	helper.position.copy(center)
-
+	
 	if (this.mode === 'single') {
 		this.selected = [helper]
 	} else if (!this.selected.includes(helper)) {
 		this.selected.push(helper)
 	}
-
+	
 	this.selectedMesh = mesh
 	if (this.onSelect) this.onSelect(helper)
 }

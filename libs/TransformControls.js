@@ -286,165 +286,133 @@
 			if ( ! planeIntersect ) return;
 			this.pointEnd.copy( planeIntersect.point ).sub( this.worldPositionStart );
 
-			if ( mode === 'translate' ) {
-
+			if (mode === 'translate') {
+				
+				if (this.axis !== this._lastAxis || this.object !== this._lastObject) {
+					// Reiniciamos la base de cálculo
+					this.pointStart.copy(this.pointEnd);
+					this._positionStart.copy(this.object.position);
+					this._lastAxis = this.axis;
+					this._lastObject = this.object;
+				}
+				
 				// Apply translate
-				this._offset.copy( this.pointEnd ).sub( this.pointStart );
-
-				if ( space === 'local' && axis !== 'XYZ' ) {
-
-					this._offset.applyQuaternion( this._worldQuaternionInv );
-
+				this._offset.copy(this.pointEnd).sub(this.pointStart);
+				
+				if (space === 'local' && axis !== 'XYZ') {
+					this._offset.applyQuaternion(this._worldQuaternionInv);
 				}
-
-				if ( axis.indexOf( 'X' ) === - 1 ) this._offset.x = 0;
-				if ( axis.indexOf( 'Y' ) === - 1 ) this._offset.y = 0;
-				if ( axis.indexOf( 'Z' ) === - 1 ) this._offset.z = 0;
-
-				if ( space === 'local' && axis !== 'XYZ' ) {
-
-					this._offset.applyQuaternion( this._quaternionStart ).divide( this._parentScale );
-
+				
+				if (axis.indexOf('X') === -1) this._offset.x = 0;
+				if (axis.indexOf('Y') === -1) this._offset.y = 0;
+				if (axis.indexOf('Z') === -1) this._offset.z = 0;
+				
+				if (space === 'local' && axis !== 'XYZ') {
+					this._offset.applyQuaternion(this._quaternionStart).divide(this._parentScale);
 				} else {
-
-					this._offset.applyQuaternion( this._parentQuaternionInv ).divide( this._parentScale );
-
+					this._offset.applyQuaternion(this._parentQuaternionInv).divide(this._parentScale);
 				}
-
-				object.position.copy( this._offset ).add( this._positionStart ); // Apply translation snap
-
-				if ( this.translationSnap ) {
-
-					if ( space === 'local' ) {
-
-						object.position.applyQuaternion( _tempQuaternion.copy( this._quaternionStart ).invert() );
-
-						if ( axis.search( 'X' ) !== - 1 ) {
-
-							object.position.x = Math.round( object.position.x / this.translationSnap ) * this.translationSnap;
-
+				
+				object.position.copy(this._offset).add(this._positionStart);
+				
+				// Apply translation snap
+				if (this.translationSnap) {
+					
+					if (space === 'local') {
+						
+						object.position.applyQuaternion(_tempQuaternion.copy(this._quaternionStart).invert());
+						
+						if (axis.search('X') !== -1) {
+							object.position.x = Math.round(object.position.x / this.translationSnap) * this.translationSnap;
 						}
-
-						if ( axis.search( 'Y' ) !== - 1 ) {
-
-							object.position.y = Math.round( object.position.y / this.translationSnap ) * this.translationSnap;
-
+						if (axis.search('Y') !== -1) {
+							object.position.y = Math.round(object.position.y / this.translationSnap) * this.translationSnap;
 						}
-
-						if ( axis.search( 'Z' ) !== - 1 ) {
-
-							object.position.z = Math.round( object.position.z / this.translationSnap ) * this.translationSnap;
-
+						if (axis.search('Z') !== -1) {
+							object.position.z = Math.round(object.position.z / this.translationSnap) * this.translationSnap;
 						}
-
-						object.position.applyQuaternion( this._quaternionStart );
-
+						
+						object.position.applyQuaternion(this._quaternionStart);
+						
 					}
-
-					if ( space === 'world' ) {
-
-						if ( object.parent ) {
-
-							object.position.add( _tempVector.setFromMatrixPosition( object.parent.matrixWorld ) );
-
+					
+					if (space === 'world') {
+						
+						if (object.parent) {
+							object.position.add(_tempVector.setFromMatrixPosition(object.parent.matrixWorld));
 						}
-
-						if ( axis.search( 'X' ) !== - 1 ) {
-
-							object.position.x = Math.round( object.position.x / this.translationSnap ) * this.translationSnap;
-
+						
+						if (axis.search('X') !== -1) {
+							object.position.x = Math.round(object.position.x / this.translationSnap) * this.translationSnap;
 						}
-
-						if ( axis.search( 'Y' ) !== - 1 ) {
-
-							object.position.y = Math.round( object.position.y / this.translationSnap ) * this.translationSnap;
-
+						if (axis.search('Y') !== -1) {
+							object.position.y = Math.round(object.position.y / this.translationSnap) * this.translationSnap;
 						}
-
-						if ( axis.search( 'Z' ) !== - 1 ) {
-
-							object.position.z = Math.round( object.position.z / this.translationSnap ) * this.translationSnap;
-
+						if (axis.search('Z') !== -1) {
+							object.position.z = Math.round(object.position.z / this.translationSnap) * this.translationSnap;
 						}
-
-						if ( object.parent ) {
-
-							object.position.sub( _tempVector.setFromMatrixPosition( object.parent.matrixWorld ) );
-
+						
+						if (object.parent) {
+							object.position.sub(_tempVector.setFromMatrixPosition(object.parent.matrixWorld));
 						}
-
+						
 					}
-
+					
 				}
-
-			} else if ( mode === 'scale' ) {
-
-				if ( axis.search( 'XYZ' ) !== - 1 ) {
-
-					let d = this.pointEnd.length() / this.pointStart.length();
-					if ( this.pointEnd.dot( this.pointStart ) < 0 ) d *= - 1;
-
-					_tempVector2.set( d, d, d );
-
-				} else {
-
-					_tempVector.copy( this.pointStart );
-
-					_tempVector2.copy( this.pointEnd );
-
-					_tempVector.applyQuaternion( this._worldQuaternionInv );
-
-					_tempVector2.applyQuaternion( this._worldQuaternionInv );
-
-					_tempVector2.divide( _tempVector );
-
-					if ( axis.search( 'X' ) === - 1 ) {
-
-						_tempVector2.x = 1;
-
-					}
-
-					if ( axis.search( 'Y' ) === - 1 ) {
-
-						_tempVector2.y = 1;
-
-					}
-
-					if ( axis.search( 'Z' ) === - 1 ) {
-
-						_tempVector2.z = 1;
-
-					}
-
-				} // Apply scale
-
-
-				object.scale.copy( this._scaleStart ).multiply( _tempVector2 );
-
-				if ( this.scaleSnap ) {
-
-					if ( axis.search( 'X' ) !== - 1 ) {
-
-						object.scale.x = Math.round( object.scale.x / this.scaleSnap ) * this.scaleSnap || this.scaleSnap;
-
-					}
-
-					if ( axis.search( 'Y' ) !== - 1 ) {
-
-						object.scale.y = Math.round( object.scale.y / this.scaleSnap ) * this.scaleSnap || this.scaleSnap;
-
-					}
-
-					if ( axis.search( 'Z' ) !== - 1 ) {
-
-						object.scale.z = Math.round( object.scale.z / this.scaleSnap ) * this.scaleSnap || this.scaleSnap;
-
-					}
-
+				
+			}
+			else if (mode === 'scale') {
+				if (this.axis !== this._lastAxis) {
+					this.pointStart.copy(this.pointEnd);
+					this._lastAxis = this.axis;
 				}
-
-			} else if ( mode === 'rotate' ) {
-
+				
+				if (axis === 'XYZ') {
+					
+					const deltaY = this.pointEnd.y - this.pointStart.y;
+					const sensitivity = 2.0;
+					
+					let scaleFactor = 1 + deltaY * sensitivity;
+					scaleFactor = Math.max(0.01, scaleFactor);
+					
+					_tempVector2.set(scaleFactor, scaleFactor, scaleFactor);
+					
+				}
+				else {
+					
+					_tempVector.copy(this.pointStart);
+					_tempVector2.copy(this.pointEnd);
+					
+					_tempVector.applyQuaternion(this._worldQuaternionInv);
+					_tempVector2.applyQuaternion(this._worldQuaternionInv);
+					
+					_tempVector2.divide(_tempVector);
+					
+					if (axis.search('X') === -1) _tempVector2.x = 1;
+					if (axis.search('Y') === -1) _tempVector2.y = 1;
+					if (axis.search('Z') === -1) _tempVector2.z = 1;
+					
+				}
+				
+				object.scale.copy(this._scaleStart).multiply(_tempVector2);
+				
+				if (this.scaleSnap) {
+					
+					if (axis.search('X') !== -1) {
+						object.scale.x = Math.round(object.scale.x / this.scaleSnap) * this.scaleSnap || this.scaleSnap;
+					}
+					
+					if (axis.search('Y') !== -1) {
+						object.scale.y = Math.round(object.scale.y / this.scaleSnap) * this.scaleSnap || this.scaleSnap;
+					}
+					
+					if (axis.search('Z') !== -1) {
+						object.scale.z = Math.round(object.scale.z / this.scaleSnap) * this.scaleSnap || this.scaleSnap;
+					}
+					
+				}
+			}
+			else if ( mode === 'rotate' ) {
 				this._offset.copy( this.pointEnd ).sub( this.pointStart );
 
 				const ROTATION_SPEED = 20 / this.worldPosition.distanceTo( _tempVector.setFromMatrixPosition( this.camera.matrixWorld ) );
@@ -460,12 +428,14 @@
 
 					this.rotationAngle *= this._endNorm.cross( this._startNorm ).dot( this.eye ) < 0 ? 1 : - 1;
 
-				} else if ( axis === 'XYZE' ) {
+				} 
+				else if ( axis === 'XYZE' ) {
 
 					this.rotationAxis.copy( this._offset ).cross( this.eye ).normalize();
 					this.rotationAngle = this._offset.dot( _tempVector.copy( this.rotationAxis ).cross( this.eye ) ) * ROTATION_SPEED;
 
-				} else if ( axis === 'X' || axis === 'Y' || axis === 'Z' ) {
+				} 
+				else if ( axis === 'X' || axis === 'Y' || axis === 'Z' ) {
 
 					this.rotationAxis.copy( _unit[ axis ] );
 

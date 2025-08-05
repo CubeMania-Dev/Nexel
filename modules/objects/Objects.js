@@ -233,4 +233,106 @@ class Objects {
   }
   
   onAdd(object) {}
+  
+import(toCursor = true) {
+  const input = document.createElement('input')
+  input.type = 'file'
+  input.style.display = 'none'
+  document.body.appendChild(input)
+  
+  input.onchange = async (e) => {
+    const file = e.target.files[0]
+    if (!file) {
+      document.body.removeChild(input)
+      return
+    }
+    
+    const ext = file.name.split('.').pop().toLowerCase()
+    const name = file.name.split('.')[0]
+    let mesh
+    
+    if (['obj', 'gltf', 'glb'].includes(ext)) {
+      const reader = new FileReader()
+      reader.onload = async (event) => {
+        const content = event.target.result
+        if (ext === 'obj') {
+          const loader = new THREE.OBJLoader()
+          const object = loader.parse(content)
+          mesh = object.children[0] || object
+        }
+        if (ext === 'gltf' || ext === 'glb') {
+          const loader = new THREE.GLTFLoader()
+          const gltf = await new Promise((resolve, reject) => {
+            loader.parse(content, '', resolve, reject)
+          })
+          mesh = gltf.scene
+          mesh.traverse(child => {
+            if (child.isMesh) {
+              child.material = new THREE.MeshPhysicalMaterial({
+                roughness: 1,
+                side: 2,
+                flatShading: true
+              })
+            }
+            if (child.isAudio) {
+              child.stop && child.stop()
+              if (child.context && child.context.state !== 'closed') {
+                child.context.close()
+              }
+            }
+          })
+        }
+        mesh.name = name
+        mesh.scale.set(1, 1, 1)
+        if (toCursor && this.cursor) {
+          const p = this.cursor.position
+          mesh.position.set(p.x, p.y, p.z)
+        } else {
+          mesh.position.set(0, 0, 0)
+        }
+        this.scene.add(mesh)
+        this.onAdd(mesh)
+        document.body.removeChild(input)
+      }
+      if (ext === 'obj') {
+        reader.readAsText(file)
+      } else {
+        reader.readAsArrayBuffer(file)
+      }
+    } else {
+      const url = URL.createObjectURL(file)
+      const loader = new THREE.TextureLoader()
+      loader.load(url, texture => {
+        const geometry = new THREE.PlaneGeometry(1, 1)
+        const materialOptions = {
+          map: texture,
+          side: 2,
+          flatShading: true
+        }
+        if (ext === 'png') {
+          materialOptions.transparent = true
+          materialOptions.alphaTest = 0.5
+        }
+        const material = new THREE.MeshPhysicalMaterial(materialOptions)
+        mesh = new THREE.Mesh(geometry, material)
+        mesh.rotation.x = -Math.PI / 2
+        mesh.name = name
+        const ratio = texture.image.width / texture.image.height
+        mesh.scale.set(ratio, 1, 1)
+        if (toCursor && this.cursor) {
+          const p = this.cursor.position
+          mesh.position.set(p.x, p.y, p.z)
+        } else {
+          mesh.position.set(0, 0, 0)
+        }
+        this.scene.add(mesh)
+        this.onAdd(mesh)
+        URL.revokeObjectURL(url)
+        document.body.removeChild(input)
+      })
+    }
+  }
+  
+  input.click()
+}
 }

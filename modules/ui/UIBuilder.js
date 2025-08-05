@@ -4,6 +4,78 @@ class UIBuilder {
 		this.move('[move]')
 		this.rotate('[rotate]')
 		this.resize('[resize]')
+		
+		this.onLoadTheme = (theme) => {}
+		
+		this.darkTheme = {
+			'bg-0': '#000',
+			'bg-1': '#121212',
+			'bg-2': '#1e1e1e',
+			'bg-3': '#2a2a2a',
+			'bg-4': '#323232',
+			'bg-5': '#424242',
+			'bg-6': '#4e4e4e',
+			
+			'text-1': '#e0e0e0',
+			'text-2': '#b0b0b0',
+			'text-3': '#808080',
+			
+			'text-accent': '#A5CAFF',
+			'text-active': '#A6C1FF',
+			
+			'accent': '#0080ff',
+			'accent-1': '#3D9EFF',
+			
+			'active': '#114382',
+			
+			'alert': '#F33737'
+		}
+		this.lightTheme = {
+			'bg-0': '#fff',
+			'bg-1': '#f5f5f5',
+			'bg-2': '#ebebeb',
+			'bg-3': '#e0e0e0',
+			'bg-4': '#d6d6d6',
+			'bg-5': '#cccccc',
+			'bg-6': '#c2c2c2',
+			
+			'text-1': '#1a1a1a',
+			'text-2': '#3a3a3a',
+			'text-3': '#5a5a5a',
+			
+			'text-accent': '#0053b0',
+			'text-active': '#0048a0',
+			
+			'accent': '#006eff',
+			'accent-1': '#3D9EFF',
+			
+			'active': '#d0e5ff',
+			
+			'alert': '#D32F2F'
+		}
+		this.softTheme = {
+			'bg-0': '#0b0e14',
+			'bg-1': '#121621',
+			'bg-2': '#1a1f2b',
+			'bg-3': '#222735',
+			'bg-4': '#2b3140',
+			'bg-5': '#353c4a',
+			'bg-6': '#404654',
+			
+			'text-1': '#d0d8e0',
+			'text-2': '#a5acb5',
+			'text-3': '#7a818a',
+			
+			'text-accent': '#A8CFFF',
+			'text-active': '#9FC7FF',
+			
+			'accent': '#5a9eff',
+			'accent-1': '#7db6ff',
+			
+			'active': '#2b4a72',
+			
+			'alert': '#e06666'
+		}
 	}
 	
 	// UI TRANSFORM
@@ -851,6 +923,10 @@ build(config, parent) {
 			})
 		}
 		
+		if (conf.checked) {
+			el.setAttribute('checked', conf.checked)
+		}
+		
 		if (conf.accent) target.classList.add('accent')
 		
 		if (conf.toggle) {
@@ -962,6 +1038,17 @@ build(config, parent) {
 			el.innerHTML = ''
 		})
 	}
+	
+active(element) {
+	if (!element || !element.dataset.group) return
+	const group = element.dataset.group
+	document.querySelectorAll(`[data-group="${group}"]`).forEach(el => el.classList.remove('active'))
+	element.classList.add('active')
+}
+
+get(selector, element = document) {
+	return element.querySelector(selector)
+}
 
   playSound(path, volume = 1, loop = false) {
 	  let audio = new Audio(path)
@@ -969,6 +1056,33 @@ build(config, parent) {
 	  audio.loop = loop
 	  audio.play()
 	}
+	
+	// THEMES
+setTheme(theme) {
+	const themes = { dark: this.darkTheme, light: this.lightTheme, soft: this.softTheme }
+	const selected = themes[theme]
+	if (!selected) return
+	const root = document.documentElement
+	for (const key in selected) {
+		root.style.setProperty(`--${key}`, selected[key])
+	}
+	localStorage.setItem('ui-theme', theme)
+}
+loadTheme() {
+	const saved = localStorage.getItem('ui-theme')
+	if (saved) this.setTheme(saved)
+	
+	this.onLoadTheme(saved)
+}
+
+
+saveToLocal(key, value) {
+  localStorage.setItem(key, JSON.stringify(value))
+}
+loadFromLocal(key) {
+	const data = localStorage.getItem(key)
+	return data ? JSON.parse(data) : null
+}
 }
 
 let ui = new UIBuilder()
